@@ -115,11 +115,7 @@ const Dashboard = () => {
                 return str;
               });
               placeholders.forEach((p) => {
-                if (
-                  htmlElement === "text" ||
-                  htmlElement === "range" ||
-                  htmlElement === "select"
-                ) {
+                if (htmlElement !== "radio") {
                   let input = document.getElementById(`${button?.id}_input`);
                   if (input && input.value) {
                     finalCommand = finalCommand.replace(
@@ -129,7 +125,9 @@ const Dashboard = () => {
                   } else {
                     error = true;
                   }
-                } else if (htmlElement === "radio") {
+                }
+                // if (htmlElement === "radio")
+                else {
                   console.log("inside radio");
                   let inputs = document.getElementsByName(p);
                   let value = "";
@@ -235,7 +233,6 @@ const Dashboard = () => {
                 button.textContent = num;
               }
               let div = positiveDiv[i];
-              console.log("button text", button.textContent);
               div.appendChild(button);
             });
             descrementalArray.map((num) => {
@@ -835,33 +832,28 @@ const Dashboard = () => {
             <hr className="my-3"></hr>
 
             <p className="text-start text-sm font-light">Fan Selection</p>
-            <div className=" mt-3 ml-auto flex justify-between">
-              <button
-                type="button"
-                className=" flex mr-3 py-2 px-3 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-              >
-                Fan
-              </button>
-              <div className="flex items-center border rounded-xl">
-                <button
-                  type="button"
-                  className=" flex  py-2 px-3 rounded-tl-2xl rounded-bl-2xl text-sm  text-gray-900 focus:outline-none bg-white border-r rounded-tl border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-                >
-                  -
-                </button>
-                <input
-                  className="w-10/12 "
-                  type="number"
-                  placeholder=" Input speed"
-                />
-                <button
-                  type="button"
-                  className=" flex  py-2 px-3   text-sm  text-gray-900 focus:outline-none bg-white  border-l rounded-br-2xl rounded-tr-2xl border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-                >
-                  +
-                </button>
+            {printerDetails?.fans?.map((f, idx) => (
+              <div className=" mt-3 ml-auto flex justify-between">
+                <span>Fan {idx + 1}</span>
+                <span>{f?.actualValue || "No data"}</span>
+                <div className="flex items-center border rounded-xl">
+                  <input
+                    className="w-10/12"
+                    type="number"
+                    placeholder=" Input speed"
+                    min={f?.min || 0}
+                    max={f?.max || 1}
+                    id={`fan_speed_${idx}_input`}
+                  />
+                  <button
+                    type="button"
+                    className="fan_speed flex py-2 px-3 text-sm text-gray-900 focus:outline-none bg-white border-l rounded-br-2xl rounded-tr-2xl border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -906,21 +898,29 @@ const Dashboard = () => {
             </p>
 
             <div className="flex jutsify-between items-center">
+              <input
+                type="text"
+                defaultValue="0.05"
+                id="minus_z_babystepping_input"
+              />
               <button
                 type="button"
                 id="minus_z_babystepping"
                 className="mx-auto w-5/12 flex justify-center font-md items-center mt-3 flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
               >
                 <ArrowTrendingDownIcon className="w-5 " />
-                -0.05mm
               </button>
+              <input
+                type="text"
+                id="plus_z_babystepping_input"
+                defaultValue="0.05"
+              />
               <button
                 type="button"
                 id="plus_z_babystepping"
                 className="mx-auto w-5/12 flex justify-center font-md items-center mt-3 flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
               >
                 <ArrowTrendingUpIcon className="w-5" />
-                +0.05mm
               </button>
             </div>
           </div>
@@ -934,19 +934,27 @@ const Dashboard = () => {
             <div className="flex justify-between items-center my-4">
               <p className=" text-sm text-start">
                 Warm-up time<br></br>
-                <span className="text-gray-400 font-light text-xs">N/A</span>
+                <span className="text-gray-400 font-light text-xs">
+                  {printerDetails?.job?.warmUpDuration || "N/A"}
+                </span>
               </p>
               <p className=" text-sm text-start">
                 Current layer time<br></br>
-                <span className="text-gray-400 font-light text-xs">N/A</span>
+                <span className="text-gray-400 font-light text-xs">
+                  {printerDetails?.job?.layer || "N/A"}
+                </span>
               </p>
               <p className=" text-sm text-start">
                 Last layer time<br></br>
-                <span className="text-gray-400 font-light text-xs">N/A</span>
+                <span className="text-gray-400 font-light text-xs">
+                  {printerDetails?.job?.layerTime || "N/A"}
+                </span>
               </p>
               <p className=" text-sm text-start">
                 Job duration<br></br>
-                <span className="text-gray-400 font-light text-xs">N/A</span>
+                <span className="text-gray-400 font-light text-xs">
+                  {printerDetails?.job?.duration || "N/A"}
+                </span>
               </p>
             </div>
           </div>
@@ -961,22 +969,31 @@ const Dashboard = () => {
             </div>
             <hr className="mt-3 "></hr>
             <div className="flex  mt-1 p-3">
-              Height <span className=" ml-4 text-gray-400 font-light">N/A</span>
+              Height{" "}
+              <span className=" ml-4 text-gray-400 font-light">
+                {printerDetails?.job?.file?.height || "N/A"}
+              </span>
             </div>
             <hr className="mt-2"></hr>
             <div className="flex  mt-1 p-3">
               Layer Height{" "}
-              <span className=" ml-4 text-gray-400 font-light">N/A</span>
+              <span className=" ml-4 text-gray-400 font-light">
+                {printerDetails?.job?.file?.layerHeight || "N/A"}
+              </span>
             </div>
             <hr className="mt-2"></hr>
             <div className="flex  mt-1 p-3">
               Filament Usage{" "}
-              <span className=" ml-4 text-gray-400 font-light">N/A</span>
+              <span className=" ml-4 text-gray-400 font-light">
+                {printerDetails?.job?.file?.filament?.[0] || "N/A"}
+              </span>
             </div>
             <hr className="mt-2"></hr>
             <div className="flex  mt-1 p-3">
               Generated by{" "}
-              <span className=" ml-4 text-gray-400 font-light">N/A</span>
+              <span className=" ml-4 text-gray-400 font-light">
+                {printerDetails?.job?.file?.generatedBy || "N/A"}
+              </span>
             </div>
           </div>
 
@@ -987,53 +1004,25 @@ const Dashboard = () => {
               </p>
             </div>
             <hr className="mt-3 "></hr>
-
-            <div className="p-3 mt-3">
-              <p className="text-start text-sm mb-3">Extruder 0</p>
-              <div className="flex items-center ">
-                <button
-                  type="button"
-                  className=" flex  py-2 px-3 border rounded-lg text-sm  text-gray-900 focus:outline-none bg-white  border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-                >
-                  -
-                </button>
-                <div className="w-full bg-gray-200 rounded-full h-2.5 mx-2 ">
-                  <div
-                    className=" h-2.5 rounded-full "
-                    style={{ width: "45%", backgroundColor: "#FFA200" }}
-                  ></div>
+            {printerDetails?.move?.extruders?.map((e, index) => (
+              <div className="p-3 mt-3">
+                <p className="text-start text-sm mb-3">Extruder {index + 1}</p>
+                <div className="flex items-center ">
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="100"
+                    id={`extrusion_factor_${index}_input`}
+                  />
+                  <button
+                    type="button"
+                    className="extrusion_factor flex py-2 px-3 text-sm text-gray-900 focus:outline-none bg-white border rounded-lg border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+                  >
+                    +
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  className=" flex  py-2 px-3  text-sm  text-gray-900 focus:outline-none bg-white  border rounded-lg border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-                >
-                  +
-                </button>
               </div>
-            </div>
-            <div className="p-3 mt-4 mb-5">
-              <p className="text-start text-sm mb-3">Extruder 0</p>
-              <div className="flex items-center ">
-                <button
-                  type="button"
-                  className=" flex  py-2 px-3 border rounded-lg text-sm  text-gray-900 focus:outline-none bg-white  border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-                >
-                  -
-                </button>
-                <div className="w-full bg-gray-200 rounded-full h-2.5 mx-2 ">
-                  <div
-                    className=" h-2.5 rounded-full "
-                    style={{ width: "45%", backgroundColor: "#FFA200" }}
-                  ></div>
-                </div>
-                <button
-                  type="button"
-                  className=" flex  py-2 px-3  text-sm  text-gray-900 focus:outline-none bg-white  border rounded-lg border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-                >
-                  +
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
 
           <div className=" lg:w-4/12 mt-10 lg:mt-0 ">
@@ -1046,11 +1035,15 @@ const Dashboard = () => {
               <div className="flex  items-center my-4">
                 <p className=" text-sm text-start mr-4">
                   Filament Usage<br></br>
-                  <span className="text-gray-400 font-light text-xs">N/A</span>
+                  <span className="text-gray-400 font-light text-xs">
+                    {printerDetails?.job?.timesLeft?.filament || "N/A"}
+                  </span>
                 </p>
                 <p className=" text-sm text-start">
                   File Progress<br></br>
-                  <span className="text-gray-400 font-light text-xs">N/A</span>
+                  <span className="text-gray-400 font-light text-xs">
+                    {printerDetails?.job?.timesLeft?.file || "N/A"}
+                  </span>
                 </p>
               </div>
             </div>
@@ -1062,35 +1055,30 @@ const Dashboard = () => {
                 </p>
               </div>
               <hr className="mt-3 "></hr>
-
-              <div className="p-3 mt-2">
-                <p className="text-start text-sm mb-3">Extruder 0</p>
-                <div className="flex items-center ">
-                  <button
-                    type="button"
-                    className=" flex  py-2 px-3 border rounded-lg text-sm  text-gray-900 focus:outline-none bg-white  border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-                  >
-                    -
-                  </button>
-                  <div className="w-full bg-gray-200 rounded-full h-2.5 mx-2 ">
-                    <div
-                      className=" h-2.5 rounded-full "
-                      style={{ width: "45%", backgroundColor: "#FFA200" }}
-                    ></div>
+              {printerDetails?.move?.extruders?.map((e, idx) => (
+                <div className="p-3 mt-2">
+                  <p className="text-start text-sm mb-3">Extruder {idx + 1}</p>
+                  <div className="flex items-center ">
+                    <input
+                      type="range"
+                      min="0.1"
+                      max="100"
+                      id={`speed_factor_${idx}_input`}
+                    />
+                    <button
+                      type="button"
+                      className="speed_factor flex py-2 px-3 text-sm text-gray-900 focus:outline-none bg-white border rounded-lg border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+                    >
+                      +
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    className=" flex  py-2 px-3  text-sm  text-gray-900 focus:outline-none bg-white  border rounded-lg border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-                  >
-                    +
-                  </button>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="rounded-lg border mt-10  w-12/12  shadow-md">
+        {/* <div className="rounded-lg border mt-10  w-12/12  shadow-md">
           <div className="flex justify-between px-3 pb-0 pt-3 font-semibold">
             <p className="flex ">
               <ClockIcon className="w-5" /> Fans
@@ -1121,7 +1109,7 @@ const Dashboard = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Modals */}
         <Transition.Root show={uploadfiles} as={Fragment}>
