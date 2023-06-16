@@ -75,11 +75,11 @@ const Dashboard = () => {
       })
       .catch((err) => {});
     getPrinterDetails();
-    // setDetailInterval(
-    //   setInterval(() => {
-    //     getPrinterDetails();
-    //   }, 5000)
-    // );
+    setDetailInterval(
+      setInterval(() => {
+        getPrinterDetails();
+      }, 5000)
+    );
     viewPrinter();
     return () => {
       clearInterval(detailInterval);
@@ -124,8 +124,7 @@ const Dashboard = () => {
                   } else {
                     error = true;
                   }
-                }
-                else {
+                } else {
                   let inputs = document.getElementsByName(p);
                   let value = "";
                   for (var i = 0; i < inputs.length; i++) {
@@ -291,15 +290,15 @@ const Dashboard = () => {
   };
 
   const onSendCommand = (command) => {
-    console.log({ command });
-    // app_api
-    //   .post("job", {
-    //     printerToken: printerid,
-    //     ownerId: printer?.ownerId,
-    //     command,
-    //   })
-    //   .then((res) => {})
-    //   .catch((err) => {});
+    // console.log({ command });
+    app_api
+      .post("job", {
+        printerToken: printerid,
+        ownerId: printer?.ownerId,
+        command,
+      })
+      .then((res) => {})
+      .catch((err) => {});
   };
 
   function CustomAxis({ x, y, payload }) {
