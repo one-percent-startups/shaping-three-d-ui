@@ -101,7 +101,6 @@ const Dashboard = () => {
           button.addEventListener("click", function (ev) {
             let htmlElement = config.htmlElement,
               error = false;
-            console.log({ htmlElement });
             let finalCommand = `${ev.currentTarget?.getAttribute(
               "data-gcode"
             )}`;
@@ -126,9 +125,7 @@ const Dashboard = () => {
                     error = true;
                   }
                 }
-                // if (htmlElement === "radio")
                 else {
-                  console.log("inside radio");
                   let inputs = document.getElementsByName(p);
                   let value = "";
                   for (var i = 0; i < inputs.length; i++) {
@@ -294,14 +291,15 @@ const Dashboard = () => {
   };
 
   const onSendCommand = (command) => {
-    app_api
-      .post("job", {
-        printerToken: printerid,
-        ownerId: printer?.ownerId,
-        command,
-      })
-      .then((res) => {})
-      .catch((err) => {});
+    console.log({ command });
+    // app_api
+    //   .post("job", {
+    //     printerToken: printerid,
+    //     ownerId: printer?.ownerId,
+    //     command,
+    //   })
+    //   .then((res) => {})
+    //   .catch((err) => {});
   };
 
   function CustomAxis({ x, y, payload }) {
@@ -449,6 +447,13 @@ const Dashboard = () => {
               </p>
             </div>
             <div className="flex justify-end p-3 bg-gray-200">
+              <button
+                type="button"
+                id="get_firmware_details"
+                className="flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+              >
+                Get firmware details
+              </button>
               <button
                 type="button"
                 className="flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
