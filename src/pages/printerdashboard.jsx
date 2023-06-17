@@ -61,6 +61,9 @@ const Dashboard = () => {
   const [file, setFile] = useState(null);
   const [detailInterval, setDetailInterval] = useState(null);
 
+  const [printFile, setPrintFile] = useState("");
+  const [files, setFiles] = useState([]);
+
   useEffect(() => {
     app_api
       .get(`printer/token/${printerid}`)
@@ -81,6 +84,13 @@ const Dashboard = () => {
       }, 5000)
     );
     viewPrinter();
+    app_api
+      .get("file")
+      .then((res) => res.data)
+      .then((res) => {
+        setFiles(res);
+      })
+      .catch((err) => {});
     return () => {
       clearInterval(detailInterval);
       quitViewPrinter();
@@ -386,14 +396,23 @@ const Dashboard = () => {
             </form>
           </div>
           <div className="w-6/12 text-end flex md:justify-end mt-5 md:mt-0 lg:mt-0">
-            <button
+            {/* <button
               type="button"
               onClick={() => setUploadFiles(true)}
               className="flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
             >
               <CloudArrowUpIcon className="w-5 mr-2" />
               Upload
-            </button>
+            </button> */}
+            <select
+              id="start_print_input"
+              value={printFile}
+              onChange={(e) => setPrintFile(e.target.value)}
+            >
+              {files.map((f) => (
+                <option value={f?.filePath}>{f?.fileName}</option>
+              ))}
+            </select>
             <button
               id="start_print"
               type="button"
