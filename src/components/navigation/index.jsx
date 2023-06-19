@@ -65,57 +65,26 @@ const NavBar = () => {
                 <ArrowsRightLeftIcon className="w-5 text-white" />
               </button>
             </div>
-            <form className="mt-3 ">
-              <label
-                // htmlFor="default-search"
-                className="mb-2 text-sm font-medium text-gray-900 sr-only "
-              >
-                Search
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <svg
-                    aria-hidden="true"
-                    className="w-5 h-5 text-white "
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    ></path>
-                  </svg>
-                </div>
-                <input
-                  type="search"
-                  id="default-search"
-                  className="block w-full py-2 pl-10 text-sm text-white-900  rounded-lg bg-[#344054] focus:ring-blue-500 focus:border-blue-500  placeholder-white "
-                  placeholder="Search"
-                />
-              </div>
-            </form>
+            
             <ul className="space-y-2 mt-5">
               <li>
+                
                 <a
                   href="/printers"
-                  className=" flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-[#344054] focus:bg-[#344054]"
-                >
-                  <span className="flex  ml-3 text-md font-medium text-white ">
-                    <AdjustmentsVerticalIcon className="w-7 pr-2" />
-                    Control
-                  </span>
-                </a>
-                <a
-                  href="/landing"
                   className="bg-[#344054] mt-1 flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-[#344054] focus:bg-[#344054]"
                 >
                   <span className="flex ml-3 text-md font-medium text-white ">
                     <ChartBarIcon className="w-7 pr-2" />
                     Dashboard
+                  </span>
+                </a>
+                <a
+                  href="/console"
+                  className=" flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-[#344054] focus:bg-[#344054]"
+                >
+                  <span className="flex  ml-3 text-md font-medium text-white ">
+                    <AdjustmentsVerticalIcon className="w-7 pr-2" />
+                    Control
                   </span>
                 </a>
                 {/* <a
@@ -162,9 +131,9 @@ const NavBar = () => {
             <p className="text-sm font-medium mt-3 mb-2 text-start">
               Welcome to Shaping3D !
             </p>
-            <p className="text-sm text-start">
+            {/* <p className="text-sm text-start">
               Lorem ipsum dolor sit amet, consectetur adip incididunt
-            </p>
+            </p> */}
             {/* <div className="py-4 my-2 rounded-lg bg-[#344054]">
               <img className=" mx-auto w-100" src={logo2} alt="Your Company" />
             </div> */}

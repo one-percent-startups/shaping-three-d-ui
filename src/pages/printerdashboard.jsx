@@ -38,10 +38,13 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   YAxis,
+  // ReversedRechartsProvider
 } from "recharts";
 import "line-chart-react/dist/index.css";
 import app_api, { details_api } from "../config/config";
 import { useParams } from "react-router-dom";
+import Printers from "./printers";
+import "./printerdashboard.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -270,6 +273,7 @@ const Dashboard = () => {
             input.name = config.name;
             let label = document.createElement("label");
             label.textContent = num;
+            label.name = config.name;
             div.appendChild(input);
             div.appendChild(label);
           });
@@ -392,9 +396,14 @@ const Dashboard = () => {
     { label: " 1", "Expected Point": 3, "Obtain Point": 73 },
     { label: " 2", "Expected Point": 15, "Obtain Point": 32 },
     { label: " 3", "Expected Point": 35, "Obtain Point": 23 },
+    { label: " 4", "Expected Point": 25, "Obtain Point": 15 },
+    { label: " 4", "Expected Point": 15, "Obtain Point": 9 },
     { label: " 4", "Expected Point": 45, "Obtain Point": 20 },
+
   ];
 
+  const latestDataPointIndex = data.length - 1;
+  const xDomain = [latestDataPointIndex - 5, latestDataPointIndex]; // Show 5 data points before the latest data point
   return (
     <div className="flex flex-row">
       <div className="hidden xs:hidden lg:block md:block">
@@ -550,28 +559,28 @@ const Dashboard = () => {
                     {printerDetails?.heat?.heaters?.map((h, index) => {
                       return (
                         <tr className="border-b border-gray-200 ">
-                          <td className="px-6 py-4 text-red-500">
+                          <td className="px-6 py-4 text-red-500 text-center">
                             Heater {index + 1}
                           </td>
-                          <td className="px-6 py-4 bg-gray-50 ">
+                          <td className="px-6 py-4 bg-gray-50 text-center">
                             {h?.current}
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-6 py-4 text-center">
                             <input
                               type="text"
                               id={`temperature_active_${index}_input`}
-                              className="border w-[100px] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center"
+                              className=" border w-[60px] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center"
                             />
                             <button
                               type="button"
                               className="temperature_active"
                             ></button>
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-6 py-4 text-center">
                             <input
                               type="text"
                               id={`temperature_standby_${index}_input`}
-                              className="border w-[100px] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center"
+                              className="border w-[60px] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center"
                             />
                             <button
                               type="button"
@@ -587,81 +596,48 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="lg:w-3/12 mt-10 lg:mt-0  border rounded-lg pb-3 shadow-md">
+          <div className="lg:w-3/12 mt-10 lg:mt-0 border rounded-lg pb-3 shadow-md">
             <h2 className="flex p-3 font-semibold">
-              <ArrowTrendingUpIcon className="w-5 mr-2 " />
+              <ArrowTrendingUpIcon className="w-5 mr-2" />
               Temperature chart
             </h2>
-            <p className="text-gray-400 text-xs text-start pl-4 mb-5  font-light">
+            <p className="text-gray-400 text-xs text-start pl-4 mb-5 font-light">
               Track your printer temperature chart.
             </p>
-            <div className="w-full overflow-x-auto">
+            <div className="w-full ">
               <LineChart
-                className="px-5"
+                className="px-5 overflow-x-hidden"
                 width={350}
                 height={250}
                 data={data}
                 margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
               >
-                <defs>
-                  <linearGradient
-                    id="liquidity-gradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#3A63E0" stopOpacity={0.3} />
-                    <stop offset="100%" stopColor="#3A63E0" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
                 <Line
-                  type={"monotone"}
+                  type="monotone"
                   dataKey="Expected Point"
                   stroke="#3A63E0"
                   strokeWidth={4}
-                  fill="url(#liquidity-gradient)"
-                  activeDot={{
-                    stroke: "#fff",
-                    strokeWidth: 5,
-                    r: 10,
-                  }}
+                  dot={false} // Disable dots for the rest of the data points
                 />
                 <Line
-                  type={"monotone"}
-                  dataKey="Expected Point"
-                  stroke="#3A63E0"
-                  strokeWidth={4}
-                  fill="url(#liquidity-gradient)"
-                  activeDot={{
-                    stroke: "#fff",
-                    strokeWidth: 2,
-                    r: 21,
-                  }}
-                />
-                <Line
-                  type={"monotone"}
+                  type="monotone"
                   dataKey="Obtain Point"
                   stroke="green"
                   strokeWidth={4}
-                  fill="url(#liquidity-gradient)"
-                  activeDot={{
-                    stroke: "#fff",
-                    strokeWidth: 5,
-                    r: 10,
-                  }}
+                  dot={false} // Disable dots for the rest of the data points
                 />
                 <XAxis
                   dataKey="label"
                   tick={<CustomAxis />}
                   axisLine={false}
                   tickLine={false}
+                  // reversed={true} // Display the latest data point on the right side
                 />
                 <Tooltip />
                 <CartesianGrid
                   vertical={false}
                   strokeDasharray="10 5"
-                  stroke={"#E5E7EB"}
+                  stroke="#E5E7EB"
                 />
               </LineChart>
             </div>
@@ -862,7 +838,7 @@ const Dashboard = () => {
                   Feed rate in mm/s
                 </p>
                 <div
-                  className="flex border rounded-lg mr-2"
+                  className="flex border rounded-lg mr-2 "
                   id="feedrate"
                 ></div>
               </div>
@@ -895,16 +871,17 @@ const Dashboard = () => {
 
             <p className="text-start text-sm font-light">Fan Selection</p>
             {printerDetails?.fans?.map((f, idx) => (
-              <div className=" mt-3 ml-auto flex justify-between">
+              <div className=" mt-3 ml-auto flex justify-between items-center">
                 <span>Fan {idx + 1}</span>
                 <span>{f?.actualValue || "No data"}</span>
-                <div className="flex items-center border rounded-xl">
+                <div className="w-9/12 flex items-center border rounded-xl items-center ">
                   <input
-                    className="w-10/12"
-                    type="number"
-                    placeholder=" Input speed"
+                    className="w-10/12 mx-3 accent-[#ffa200]  bg-[#fff]"
+                    // className=""
+                    type="range"
+                    // placeholder=" Input speed"
                     min={f?.min || 0}
-                    max={f?.max || 1}
+                    max={f?.max || 100}
                     id={`fan_speed_${idx}_input`}
                   />
                   <button
@@ -932,22 +909,31 @@ const Dashboard = () => {
             >
               {jobcontrol === "print" ? (
                 <>
+                <button>
                   <PlayCircleIcon className="w-5" />
                   Print
+                  </button>
                 </>
               ) : jobcontrol === "stop" ? (
                 <>
+                <button>
                   <PauseIcon className="w-5" id="pause_print" />
                   Stop Print
+                  </button>
                 </>
-              ) : (
+              ) : jobcontrol === "resume" ? (
                 <>
                   <>
                     <PlayCircleIcon className="w-5" />
-                    Print
+                     Resume Print
                   </>
                 </>
-              )}
+              ):jobcontrol === "pause" ?  <>
+                  <>
+                    <PlayCircleIcon className="w-5" />
+                    Pause Print
+                  </>
+                </>:<></>}
             </button>
           </div>
 
@@ -958,32 +944,37 @@ const Dashboard = () => {
             <p className="text-xs text-gray-400 text-start mt-1">
               Current offset 0.00mm
             </p>
-
-            <div className="flex jutsify-between items-center">
-              <input
-                type="text"
-                defaultValue="0.05"
-                id="minus_z_babystepping_input"
-              />
-              <button
-                type="button"
-                id="minus_z_babystepping"
-                className="mx-auto w-5/12 flex justify-center font-md items-center mt-3 flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-              >
-                <ArrowTrendingDownIcon className="w-5 " />
-              </button>
-              <input
-                type="text"
-                id="plus_z_babystepping_input"
-                defaultValue="0.05"
-              />
-              <button
-                type="button"
-                id="plus_z_babystepping"
-                className="mx-auto w-5/12 flex justify-center font-md items-center mt-3 flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-              >
-                <ArrowTrendingUpIcon className="w-5" />
-              </button>
+            <div className="flex  justify-between items-center">
+              <div className=" mt-3">
+                <input
+                  className="w-10 outline outline-1 mb-3 px-2"
+                  type="text"
+                  defaultValue="0.05"
+                  id="minus_z_babystepping_input"
+                />
+                <button
+                  type="button"
+                  id="minus_z_babystepping"
+                  className="mx-auto w-32 flex justify-center font-md items-center  flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+                >
+                  <ArrowTrendingDownIcon className="w-5 " />
+                </button>
+              </div>
+              <div className=" mt-3">
+                <input
+                  className="w-10 outline outline-1 mb-3 px-2"
+                  type="text"
+                  id="plus_z_babystepping_input"
+                  defaultValue="0.05"
+                />
+                <button
+                  type="button"
+                  id="plus_z_babystepping"
+                  className="mx-auto w-32 flex justify-center font-md items-center  flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+                >
+                  <ArrowTrendingUpIcon className="w-5" />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1069,8 +1060,9 @@ const Dashboard = () => {
             {printerDetails?.move?.extruders?.map((e, index) => (
               <div className="p-3 mt-3">
                 <p className="text-start text-sm mb-3">Extruder {index + 1}</p>
-                <div className="flex items-center ">
+                <div className="flex justify-between items-center ">
                   <input
+                    className="accent-[#ffa200] w-8/12 bg-[#fff]"
                     type="range"
                     min="0.1"
                     max="100"
@@ -1120,8 +1112,9 @@ const Dashboard = () => {
               {printerDetails?.move?.extruders?.map((e, idx) => (
                 <div className="p-3 mt-2">
                   <p className="text-start text-sm mb-3">Extruder {idx + 1}</p>
-                  <div className="flex items-center ">
+                  <div className="flex justify-between items-center ">
                     <input
+                      className="accent-[#ffa200] w-8/12 bg-[#fff]"
                       type="range"
                       min="0.1"
                       max="100"

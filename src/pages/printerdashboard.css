@@ -1,0 +1,57 @@
+/* #feedamount{
+    position: relative;
+}
+#feedamount >  input[type="radio"], #feedrate > input[type="radio"]{
+    appearance: none;
+    width:40px;
+    height:40px;
+    border-radius: 0;
+    text-align: center;
+}
+
+#feedamount > label{
+    position: absolute;
+    /* top:40%; */
+    /* width: 10px;
+    font-size: 18px;
+    color:#000; */
+    /* left:40% */
+/* } */
+/* #feedamount > input[type="radio"]:checked
+,#feedrate > input[type="radio"]:checked{
+   background-color: #FFA200;
+
+}  */
+
+.radio-label {
+    position: relative;
+    display: inline-block;
+    padding-left: 25px; /* Adjust spacing as needed */
+    margin-right: 10px; /* Adjust spacing between radio buttons as needed */
+    cursor: pointer;
+  }
+  
+  .radio-label input[type="radio"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  
+  .radio-label::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 16px; /* Adjust size as needed */
+    height: 16px; /* Adjust size as needed */
+    border: 1px solid #000; /* Adjust border properties */
+    border-radius: 50%;
+    background-color: #fff;
+  }
+  
+  .radio-label input[type="radio"]:checked + ::before {
+    background-color: #000; /* Adjust color for checked radio button */
+  }
+  
