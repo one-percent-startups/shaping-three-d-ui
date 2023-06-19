@@ -39,12 +39,11 @@ import {
   CartesianGrid,
   YAxis,
 } from "recharts";
-import Chart from "line-chart-react";
 import "line-chart-react/dist/index.css";
 import app_api, { details_api } from "../config/config";
-import Cookies from "js-cookie";
 import { useParams } from "react-router-dom";
-import Printers from "./printers";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -62,7 +61,8 @@ const Dashboard = () => {
   const [detailInterval, setDetailInterval] = useState(null);
 
   const [printFile, setPrintFile] = useState("");
-  const [files, setFiles] = useState([]);
+
+  const [loadedFiles, setLoadedFiles] = useState([]);
 
   useEffect(() => {
     app_api
@@ -81,10 +81,12 @@ const Dashboard = () => {
     setDetailInterval(
       setInterval(() => {
         getPrinterDetails();
+        getJobs();
       }, 5000)
     );
     viewPrinter();
     getFileList();
+    getJobs();
     app_api
       .get("file")
       .then((res) => res.data)
@@ -286,6 +288,28 @@ const Dashboard = () => {
       .catch((err) => {});
   };
 
+  const getJobs = () => {
+    details_api
+      .get(`jobs/printer/${printerid}`)
+      .then((res) => res.data)
+      .then((res) => {
+        if (Array.isArray(res) && res.length > 0) {
+          for (const job of res) {
+            if (job?.type === "task") {
+              toast.info(job?.response);
+            } else if (job?.type === "list_file") {
+              let filesStr = job?.response;
+              filesStr = filesStr.slice(13);
+              let files = filesStr.split(",");
+              setLoadedFiles(files);
+            }
+          }
+          res.forEach((job) => {});
+        }
+      })
+      .catch((err) => {});
+  };
+
   const getFileList = () => {
     app_api
       .post("job/list-file", { printerToken: printerid })
@@ -403,7 +427,7 @@ const Dashboard = () => {
               </div>
             </form>
           </div>
-          <div className="w-6/12 text-end flex md:justify-end mt-5 md:mt-0 lg:mt-0">
+          <div className="w-6/12 text-end flex md:justify-end md:items-center mt-5 md:mt-0 lg:mt-0">
             {/* <button
               type="button"
               onClick={() => setUploadFiles(true)}
@@ -412,15 +436,19 @@ const Dashboard = () => {
               <CloudArrowUpIcon className="w-5 mr-2" />
               Upload
             </button> */}
-            <select
-              id="start_print_input"
-              value={printFile}
-              onChange={(e) => setPrintFile(e.target.value)}
-            >
-              {files.map((f) => (
-                <option value={f?.filePath}>{f?.fileName}</option>
-              ))}
-            </select>
+            {loadedFiles.length > 0 ? (
+              <select
+                id="start_print_input"
+                value={printFile}
+                onChange={(e) => setPrintFile(e.target.value)}
+              >
+                {loadedFiles.map((f) => (
+                  <option value={f}>{f}</option>
+                ))}
+              </select>
+            ) : (
+              <span className="text-muted">No loaded file</span>
+            )}
             <button
               id="start_print"
               type="button"
@@ -1279,6 +1307,11 @@ const Dashboard = () => {
           </Dialog>
         </Transition.Root>
       </div>
+      <ToastContainer
+        newestOnTop={true}
+        pauseOnFocusLoss={false}
+        position="top-left"
+      />
     </div>
   );
 };
