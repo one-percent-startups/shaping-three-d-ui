@@ -399,7 +399,6 @@ const Dashboard = () => {
     { label: " 4", "Expected Point": 25, "Obtain Point": 15 },
     { label: " 4", "Expected Point": 15, "Obtain Point": 9 },
     { label: " 4", "Expected Point": 45, "Obtain Point": 20 },
-
   ];
 
   const latestDataPointIndex = data.length - 1;
@@ -413,31 +412,52 @@ const Dashboard = () => {
       <div className="p-4 pt-6 xs:ml-[0em]  w-full ">
         <div className="md:flex justify-center items-center">
           <div className="md:w-6/12 text-start flex">
-            <form className="w-full">
-              <label
-                htmlFor="default-search"
-                className="mb-2 text-sm font-medium text-gray-900 sr-only "
-              >
-                Search
-              </label>
-              <div className="relative w-100">
-                <div className="w-12/12  inset-y-0 left-0 flex items-center pl-3 pointer-events-none"></div>
-                <input
-                  type="search"
-                  id="default-search"
-                  className="block w-full p-2 pl-3 text-sm text-gray-900 border rounded-lg bg-gray-50   "
-                  placeholder="Search Code"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="flex text-gray-500 absolute right-0 bottom-[1px]  hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 "
-                >
-                  <PaperAirplaneIcon className="w-5 text-black mr-1" />
-                  Send
-                </button>
-              </div>
-            </form>
+            <Formik
+              initialValues={{ command: "" }}
+              onSubmit={(values, { resetForm }) => {
+                onSendCommand(values.command);
+                resetForm();
+              }}
+            >
+              {({
+                handleBlur,
+                handleChange,
+                handleSubmit,
+                values,
+                touched,
+                errors,
+              }) => (
+                <form className="w-full" noValidate onSubmit={handleSubmit}>
+                  <label
+                    htmlFor="default-search"
+                    className="mb-2 text-sm font-medium text-gray-900 sr-only "
+                  >
+                    Search
+                  </label>
+                  <div className="relative w-100">
+                    <div className="w-12/12  inset-y-0 left-0 flex items-center pl-3 pointer-events-none"></div>
+
+                    <input
+                      name="command"
+                      type="text"
+                      className="block w-full p-2 pl-3 text-sm text-gray-900 border rounded-lg bg-gray-50"
+                      placeholder="Send command"
+                      required
+                      value={values.command}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <button
+                      type="submit"
+                      className="flex text-gray-500 absolute right-0 bottom-[1px] focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-4 py-2"
+                    >
+                      <PaperAirplaneIcon className="w-5 text-black mr-1" />
+                      Send
+                    </button>
+                  </div>
+                </form>
+              )}
+            </Formik>
           </div>
           <div className="w-6/12 text-end flex md:justify-end md:items-center mt-5 md:mt-0 lg:mt-0">
             {/* <button
@@ -903,38 +923,44 @@ const Dashboard = () => {
               Job Control
             </h1>
             <hr className="my-3"></hr>
-            <button
-              type="button"
-              className="my-2 mx-auto w-full flex justify-center font-md items-center flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-            >
-              {jobcontrol === "print" ? (
-                <>
-                <button>
-                  <PlayCircleIcon className="w-5" />
-                  Print
-                  </button>
-                </>
-              ) : jobcontrol === "stop" ? (
-                <>
-                <button>
-                  <PauseIcon className="w-5" id="pause_print" />
-                  Stop Print
-                  </button>
-                </>
-              ) : jobcontrol === "resume" ? (
-                <>
-                  <>
-                    <PlayCircleIcon className="w-5" />
-                     Resume Print
-                  </>
-                </>
-              ):jobcontrol === "pause" ?  <>
-                  <>
-                    <PlayCircleIcon className="w-5" />
-                    Pause Print
-                  </>
-                </>:<></>}
-            </button>
+
+            {/* {printerDetails?.state?.status === "idle" && (
+              <button
+                id="start_print"
+                type="button"
+                className="my-2 mx-auto w-full flex justify-center font-md items-center flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+              >
+                Print
+              </button>
+            )} */}
+            {printerDetails?.state?.status === "processing" && (
+              <button
+                id="pause_print"
+                type="button"
+                className="my-2 mx-auto w-full flex justify-center font-md items-center flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+              >
+                Pause
+              </button>
+            )}
+            {(printerDetails?.state?.status === "paused" ||
+              printerDetails?.state?.status === "pausing") && (
+              <button
+                id="resume_print"
+                type="button"
+                className="my-2 mx-auto w-full flex justify-center font-md items-center flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+              >
+                Resume
+              </button>
+            )}
+            {printerDetails?.state?.status === "processing" && (
+              <button
+                id="stop_print"
+                type="button"
+                className="my-2 mx-auto w-full flex justify-center font-md items-center flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+              >
+                Stop
+              </button>
+            )}
           </div>
 
           <div className="border rounded-lg p-3 lg:w-3/12 mt-10 lg:mt-0 shadow-md">

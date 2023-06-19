@@ -37,22 +37,26 @@ export const PrinterConsole = () => {
       <div>
         <h1 className="text-2xl">Commands</h1>
         <h2 className="text-xl">History</h2>
-        <table>
+        <table className="min-w-full divide-y divide-gray-300">
           <thead>
-            <tr>
+            <tr className="even:bg-gray-50">
               <th>Command</th>
               <th>Response</th>
               <th>Responded at</th>
               <th>Created at</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-300">
             {jobs.map((j, idx) => (
-              <tr key={idx}>
-                <td>{j?.command}</td>
-                <td>{j?.response}</td>
-                <td>{formatDate(j?.responseReceivedAt)}</td>
-                <td>{formatDate(j?.createdAt)}</td>
+              <tr className="divide-x divide-gray-300" key={idx}>
+                <td className="whitespace-nowrap px-1">{j?.command}</td>
+                <td className="text-left px-3">{j?.response}</td>
+                <td className="whitespace-nowrap text-left px-1">
+                  {formatDate(j?.responseReceivedAt)}
+                </td>
+                <td className="whitespace-nowrap text-left px-1">
+                  {formatDate(j?.createdAt)}
+                </td>
               </tr>
             ))}
           </tbody>
