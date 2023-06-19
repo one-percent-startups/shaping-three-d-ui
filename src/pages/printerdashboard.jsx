@@ -298,7 +298,11 @@ const Dashboard = () => {
             if (job?.type === "list_file") {
               let filesStr = job?.response;
               filesStr = filesStr.slice(13);
-              let files = filesStr.split(",");
+              let files = filesStr.split(",").map((f) => {
+                let name = f.slice(1);
+                name = name.substring(0, name.length - 1);
+                return name;
+              });
               setLoadedFiles(files);
             } else {
               toast.info(job?.response);
