@@ -84,6 +84,7 @@ const Dashboard = () => {
       }, 5000)
     );
     viewPrinter();
+    getFileList();
     app_api
       .get("file")
       .then((res) => res.data)
@@ -282,6 +283,13 @@ const Dashboard = () => {
       .then((res) => {
         setPrinterDetails(res);
       })
+      .catch((err) => {});
+  };
+
+  const getFileList = () => {
+    app_api
+      .post("job/list-file", { printerToken: printerid })
+      .then((res) => {})
       .catch((err) => {});
   };
 
