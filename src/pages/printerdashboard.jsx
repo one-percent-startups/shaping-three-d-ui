@@ -295,16 +295,15 @@ const Dashboard = () => {
       .then((res) => {
         if (Array.isArray(res) && res.length > 0) {
           for (const job of res) {
-            if (job?.type === "task") {
-              toast.info(job?.response);
-            } else if (job?.type === "list_file") {
+            if (job?.type === "list_file") {
               let filesStr = job?.response;
               filesStr = filesStr.slice(13);
               let files = filesStr.split(",");
               setLoadedFiles(files);
+            } else {
+              toast.info(job?.response);
             }
           }
-          res.forEach((job) => {});
         }
       })
       .catch((err) => {});
