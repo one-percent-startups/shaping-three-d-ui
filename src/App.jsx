@@ -6,6 +6,7 @@ import SignUp from "./pages/auth/signup";
 import Printers from "./pages/printers.jsx";
 import PrinterDashboard from "./pages/printerdashboard.jsx";
 import Logout from "./components/auth/logout";
+import { PrinterConsole } from "./pages/printerConsole";
 
 // import StudentDashboard from "./pages/student_dashboard";
 // import NavBar from "./components/navigation";
@@ -21,7 +22,11 @@ function App() {
         <Route
           path="printers/:printerid"
           element={<PrinterDashboard />}
-        />
+        ></Route>
+        <Route
+          path="printers/:printerId/console"
+          element={<PrinterConsole />}
+        ></Route>
       </Route>
     </Routes>
   );
