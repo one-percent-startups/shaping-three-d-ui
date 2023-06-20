@@ -79,7 +79,7 @@ const NavBar = () => {
                   </span>
                 </a>
                 <a
-                  className=" flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-[#344054] focus:bg-[#344054]"
+                  className=" mt-3 cursor-pointer flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-[#344054] focus:bg-[#344054]"
                 >
                   <span className="flex  ml-3 text-md font-medium text-white ">
                     <AdjustmentsVerticalIcon className="w-7 pr-2" />
