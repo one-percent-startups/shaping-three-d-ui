@@ -973,7 +973,7 @@ const Dashboard = () => {
             <div className="flex  justify-between items-center">
               <div className=" mt-3">
                 <input
-                  className="w-10 outline outline-1 mb-3 px-2"
+                  className="w-20 outline outline-1 mb-3 px-2"
                   type="text"
                   defaultValue="0.05"
                   id="minus_z_babystepping_input"
@@ -988,7 +988,7 @@ const Dashboard = () => {
               </div>
               <div className=" mt-3">
                 <input
-                  className="w-10 outline outline-1 mb-3 px-2"
+                  className="w-20 outline outline-1 mb-3 px-2"
                   type="text"
                   id="plus_z_babystepping_input"
                   defaultValue="0.05"
