@@ -114,8 +114,8 @@ const Printers = () => {
                     alt=""
                   />
                   <h3 className="mt-6 text-sm font-medium text-gray-900">
-                    {/* {printer.id} */}
-                    Tall Printer
+                    {printer.name}
+                    {/* Tall Printer */}
                   </h3>
                   <dl className="mt-1 flex flex-grow flex-col justify-between">
                     <dt className="sr-only">Title</dt>
