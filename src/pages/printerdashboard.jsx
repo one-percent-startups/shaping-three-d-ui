@@ -270,10 +270,11 @@ const Dashboard = () => {
           config.selfArray.forEach((num) => {
             let input = document.createElement("input");
             input.type = "radio";
-            input.classList.add("border-r", "p-2");
+            input.classList.add("border-r", "p-2", "ml-2");
             input.value = num;
             input.name = config.name;
             let label = document.createElement("label");
+            label.classList.add("ml-0.5", "mr-2");
             label.textContent = num;
             label.name = config.name;
             div.appendChild(input);
@@ -386,6 +387,7 @@ const Dashboard = () => {
       .post("file", formData)
       .then((res) => {
         alert("File uploaded");
+        onSendCommand(`V120 ${res.data?.filePath}`);
         setUploadFiles(false);
       })
       .catch((err) => {
@@ -403,16 +405,15 @@ const Dashboard = () => {
     { label: " 4", "Expected Point": 45, "Obtain Point": 20 },
   ];
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-  
-    const openModal = () => {
-      setIsModalOpen(true);
-    };
-  
-    const closeModal = () => {
-      setIsModalOpen(false);
-    };
-  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const latestDataPointIndex = data.length - 1;
   const xDomain = [latestDataPointIndex - 5, latestDataPointIndex]; // Show 5 data points before the latest data point
@@ -473,14 +474,14 @@ const Dashboard = () => {
             </Formik>
           </div>
           <div className="w-6/12 text-end flex md:justify-end md:items-center mt-5 md:mt-0 lg:mt-0">
-            {/* <button
+            <button
               type="button"
               onClick={() => setUploadFiles(true)}
               className="flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
             >
               <CloudArrowUpIcon className="w-5 mr-2" />
               Upload
-            </button> */}
+            </button>
             {loadedFiles.length > 0 ? (
               <select
                 id="start_print_input"
@@ -492,7 +493,7 @@ const Dashboard = () => {
                 ))}
               </select>
             ) : (
-              <span className="text-muted">No loaded file</span>
+              <span className="text-muted mr-2">No loaded file</span>
             )}
             <button
               id="start_print"
@@ -783,34 +784,34 @@ const Dashboard = () => {
                       className="absolute top-4 right-4 text-white text-xl bg-red-600 p-2 shadow-md hover:bg-red-800"
                       onClick={closeModal}
                     >
-                      <XMarkIcon className="w-5"/>
+                      <XMarkIcon className="w-5" />
                     </button>
                     <div className="bg-white p-4 w-[80vw] h-[80vh]">
-                    <iframe
-                src="http://home.rev.vet:6780/0/stream"
-                width="100%"
-                height="100%"
-                title="Live Stream"
-                style={{ objectFit: 'cover' }}
-              ></iframe>
+                      <iframe
+                        src="http://home.rev.vet:6780/0/stream"
+                        width="100%"
+                        height="100%"
+                        title="Live Stream"
+                        style={{ objectFit: "cover" }}
+                      ></iframe>
                     </div>
                   </div>
                 </div>
               )}
               <div className="aspect-w-32 aspect-h-16">
-              <iframe
-                src="http://home.rev.vet:6780/0/stream"
-                width="100%"
-                height="100%"
-                title="Live Stream"
-                style={{ objectFit: 'cover' }}
-              ></iframe>
+                <iframe
+                  src="http://home.rev.vet:6780/0/stream"
+                  width="100%"
+                  height="100%"
+                  title="Live Stream"
+                  style={{ objectFit: "cover" }}
+                ></iframe>
               </div>
               <button
                 className="absolute bottom-4 right-4 cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded"
                 onClick={openModal}
               >
-                <ArrowsPointingOutIcon className="w-5"/>
+                <ArrowsPointingOutIcon className="w-5" />
               </button>
             </div>
           </div>

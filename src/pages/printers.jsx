@@ -2,7 +2,7 @@ import React, { useEffect, useState, Fragment } from "react";
 import NavBar from "../components/navigation";
 import {
   CloudArrowUpIcon,
-  PaperAirplaneIcon,
+  MagnifyingGlassCircleIcon,
   PlusCircleIcon,
   PowerIcon,
   ArrowUpTrayIcon,
@@ -77,10 +77,10 @@ const Printers = () => {
                 />
                 <button
                   type="submit"
-                  className="flex text-gray-500 absolute right-0 bottom-[1px]  hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 "
+                  className="flex text-gray-500 absolute right-0 bottom-[1px] focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-4 py-2 "
                 >
-                  <PaperAirplaneIcon className="w-5 text-black mr-1" />
-                  Send
+                  <MagnifyingGlassCircleIcon className="w-5 text-black mr-1" />
+                  Search
                 </button>
               </div>
             </form>
@@ -108,15 +108,16 @@ const Printers = () => {
                 className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow-md"
               >
                 <div className="flex flex-1 flex-col p-8">
-                  <img
+                  {/* <img
                     className="mx-auto h-32 w-32 flex-shrink-0 "
                     src={"#"}
                     alt=""
-                  />
-                  <h3 className="mt-6 text-sm font-medium text-gray-900">
+                  /> */}
+                  <h3 className="text-md font-medium text-gray-900">
                     {printer.name}
                     {/* Tall Printer */}
                   </h3>
+                  <h4 className="text-xs">{printer.id}</h4>
                   <dl className="mt-1 flex flex-grow flex-col justify-between">
                     <dt className="sr-only">Title</dt>
                     <dd className="text-sm text-gray-500"></dd>
@@ -136,7 +137,7 @@ const Printers = () => {
                 </div>
                 <div>
                   <div className="-mt-px flex divide-x divide-gray-200">
-                    <div className="flex w-0 flex-1">
+                    <div className="flex flex-1">
                       <a
                         href={""}
                         className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900"
@@ -144,7 +145,7 @@ const Printers = () => {
                         Remove
                       </a>
                     </div>
-                    <div className="-ml-px flex w-0 flex-1">
+                    <div className="flex flex-1">
                       <a
                         href={`/printers/${printer.id}`}
                         className="relative inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-br-lg border border-transparent py-4 text-sm font-semibold text-gray-900 hover                                                                "
@@ -229,7 +230,7 @@ const Printers = () => {
                               required
                               className="mt-6 ml-2 w-100 px-3 py-2 border"
                             />
-                            <br/>
+                            <br />
                             {touched.name && errors.name && (
                               <span className="text-red-700 text-sm">
                                 {errors.name}
