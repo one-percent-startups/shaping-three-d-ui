@@ -788,7 +788,7 @@ const Dashboard = () => {
                     </button>
                     <div className="bg-white p-4 w-[80vw] h-[80vh]">
                       <iframe
-                        src="http://home.rev.vet:6780/0/stream"
+                        src={printer?.streamLink}
                         width="100%"
                         height="100%"
                         title="Live Stream"
@@ -800,7 +800,7 @@ const Dashboard = () => {
               )}
               <div className="aspect-w-32 aspect-h-16">
                 <iframe
-                  src="http://home.rev.vet:6780/0/stream"
+                  src={printer?.streamLink}
                   width="100%"
                   height="100%"
                   title="Live Stream"
