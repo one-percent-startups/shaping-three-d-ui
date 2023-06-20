@@ -205,18 +205,36 @@ const Printers = () => {
                     <Formik
                       initialValues={initialValues}
                       onSubmit={registerPrinter}
-                      // validate={addPrinterform}
+                      validationSchema={addPrinterform}
                     >
-                      {({ isSubmitting }) => (
-                        <Form>
+                      {({
+                        isSubmitting,
+                        handleBlur,
+                        handleChange,
+                        values,
+                        touched,
+                        errors,
+                        handleSubmit,
+                      }) => (
+                        <Form noValidate onSubmit={handleSubmit}>
                           <div>
                             <label htmlFor="name">Name</label>
                             <input
                               type="text"
                               id="name"
                               name="name"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              value={values.name}
+                              required
                               className="mt-6 ml-2 w-100 px-3 py-2 border"
                             />
+                            <br/>
+                            {touched.name && errors.name && (
+                              <span className="text-red-700 text-sm">
+                                {errors.name}
+                              </span>
+                            )}
                           </div>
 
                           <div className="mt-5 sm:mt-6">
