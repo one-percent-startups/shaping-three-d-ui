@@ -21,6 +21,8 @@ import {
   CircleStackIcon,
   ArrowUpTrayIcon,
   PlayCircleIcon,
+  ArrowsPointingOutIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Menu, Transition, Dialog } from "@headlessui/react";
@@ -401,6 +403,17 @@ const Dashboard = () => {
     { label: " 4", "Expected Point": 45, "Obtain Point": 20 },
   ];
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+  
+    const openModal = () => {
+      setIsModalOpen(true);
+    };
+  
+    const closeModal = () => {
+      setIsModalOpen(false);
+    };
+  
+
   const latestDataPointIndex = data.length - 1;
   const xDomain = [latestDataPointIndex - 5, latestDataPointIndex]; // Show 5 data points before the latest data point
   return (
@@ -756,86 +769,49 @@ const Dashboard = () => {
           <div className="lg:w-[30%] mt-10 lg:mt-0 border overflow-x-auto rounded-lg pb-3 shadow-md">
             <h2 className="flex p-3 font-semibold">
               <CircleStackIcon className="w-5 mr-2 " />
-              Layer Chart
+              Live Streaming
             </h2>
             <p className="text-gray-400 text-xs text-start pl-4 mb-5  font-light">
-              Track your printer temperature chart.
+              Track your printer in real-time
             </p>
-            <div className="w-full overflow-x-auto">
-              <LineChart
-                className="pl-1 "
-                width={350}
-                height={150}
-                data={data}
-                margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
+            <div className="relative">
+              {isModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                  <div className="absolute inset-0 bg-black opacity-75"></div>
+                  <div className="relative z-10">
+                    <button
+                      className="absolute top-4 right-4 text-white text-xl bg-red-600 p-2 shadow-md hover:bg-red-800"
+                      onClick={closeModal}
+                    >
+                      <XMarkIcon className="w-5"/>
+                    </button>
+                    <div className="bg-white p-4 w-[80vw] h-[80vh]">
+                    <iframe
+                src="http://home.rev.vet:6780/0/stream"
+                width="100%"
+                height="100%"
+                title="Live Stream"
+                style={{ objectFit: 'cover' }}
+              ></iframe>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className="aspect-w-32 aspect-h-16">
+              <iframe
+                src="http://home.rev.vet:6780/0/stream"
+                width="100%"
+                height="100%"
+                title="Live Stream"
+                style={{ objectFit: 'cover' }}
+              ></iframe>
+              </div>
+              <button
+                className="absolute bottom-4 right-4 cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded"
+                onClick={openModal}
               >
-                <defs>
-                  <linearGradient
-                    id="liquidity-gradient"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#3A63E0" stopOpacity={0.3} />
-                    <stop offset="100%" stopColor="#3A63E0" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <Line
-                  type={"monotone"}
-                  dataKey="Expected Point"
-                  stroke="#3A63E0"
-                  strokeWidth={4}
-                  fill="url(#liquidity-gradient)"
-                  activeDot={{
-                    stroke: "#fff",
-                    strokeWidth: 5,
-                    r: 10,
-                  }}
-                />
-                <Line
-                  type={"monotone"}
-                  dataKey="Expected Point"
-                  stroke="blue"
-                  strokeWidth={4}
-                  fill="url(#liquidity-gradient)"
-                  activeDot={{
-                    stroke: "#fff",
-                    strokeWidth: 2,
-                    r: 21,
-                  }}
-                />
-                <Line
-                  type={"monotone"}
-                  dataKey="Obtain Point"
-                  stroke="red"
-                  strokeWidth={4}
-                  fill="url(#liquidity-gradient)"
-                  activeDot={{
-                    stroke: "#fff",
-                    strokeWidth: 5,
-                    r: 10,
-                  }}
-                />
-
-                <Tooltip
-                //   content={<></>}
-                //   cursor={{
-                //     strokeWidth: 50,
-                //     stroke: 'rgb(237, 239, 243)',
-                //   }}
-                //   wrapperStyle={{
-                //     boxShadow: '0 0 1px 0px 4px 50px rgba(73, 93, 112, 0.08)',
-                //     background: 'red',
-                //   }}
-                />
-                <CartesianGrid
-                  vertical={false}
-                  strokeDasharray="10 5"
-                  stroke={"#E5E7EB"}
-                />
-                <YAxis />
-              </LineChart>
+                <ArrowsPointingOutIcon className="w-5"/>
+              </button>
             </div>
           </div>
         </div>
