@@ -105,9 +105,9 @@ const Printers = () => {
             {printers.map((printer, index) => (
               <li
                 key={index}
-                className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow-md"
+                className="w-[200px] col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow-md"
               >
-                <div className="flex flex-1 flex-col p-8">
+                <div className="flex flex-1 flex-col p-8 ">
                   {/* <img
                     className="mx-auto h-32 w-32 flex-shrink-0 "
                     src={"#"}
@@ -132,7 +132,7 @@ const Printers = () => {
                       >
                         {printer.isWorking ? "Online" : "Online"}
                       </span>
-                    </dd>
+                    </dd> 
                   </dl>
                 </div>
                 <div>

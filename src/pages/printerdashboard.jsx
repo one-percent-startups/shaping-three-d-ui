@@ -30,18 +30,18 @@ import React, { useState, useEffect, Fragment } from "react";
 import NavBar from "../components/navigation";
 import avatar from "../assets/images/avatar4.jpeg";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  XAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  YAxis,
-  // ReversedRechartsProvider
-} from "recharts";
+// import {
+//   LineChart,
+//   Line,
+//   AreaChart,
+//   Area,
+//   XAxis,
+//   Tooltip,
+//   ResponsiveContainer,
+//   CartesianGrid,
+//   YAxis,
+//   // ReversedRechartsProvider
+// } from "recharts";
 import "line-chart-react/dist/index.css";
 import app_api, { details_api } from "../config/config";
 import { useParams } from "react-router-dom";
@@ -49,7 +49,15 @@ import Printers from "./printers";
 import "./printerdashboard.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import {
+  XYPlot,
+  XAxis,
+  YAxis,
+  HorizontalGridLines,
+  LineMarkSeries,
+  Hint,
+} from "react-vis";
+// import { ArrowTrendingUpIcon } from "@heroicons/react/outline";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -268,16 +276,20 @@ const Dashboard = () => {
         } else if (config.name === "feedrate" || config.name === "feedamount") {
           const div = document.getElementById(config.name);
           config.selfArray.forEach((num) => {
+            let label = document.createElement("label");
+            label.classList.add("flex", "flex-col", "border-r", "p-2");
+            label.name = config.name;
             let input = document.createElement("input");
             input.type = "radio";
-            input.classList.add("border-r", "p-2", "ml-2");
             input.value = num;
             input.name = config.name;
-            let label = document.createElement("label");
-            label.classList.add("ml-0.5", "mr-2");
-            label.textContent = num;
-            label.name = config.name;
-            div.appendChild(input);
+            let span = document.createElement("span");
+            span.classList.add("radio-label", "mt-2");
+            span.textContent = num;
+
+            label.appendChild(input);
+            label.appendChild(span);
+            // div.appendChild(input);
             div.appendChild(label);
           });
         }
@@ -288,9 +300,10 @@ const Dashboard = () => {
   const getPrinterDetails = () => {
     details_api
       .get(`printer-details/${printerid}`)
-      .then((res) => res.data)
+
       .then((res) => {
-        setPrinterDetails(res);
+        setPrinterDetails(res.data);
+        console.log(res.data);
       })
       .catch((err) => {});
   };
@@ -343,25 +356,16 @@ const Dashboard = () => {
 
   const onSendCommand = (command) => {
     // console.log({ command });
-    app_api
-      .post("job", {
-        printerToken: printerid,
-        ownerId: printer?.ownerId,
-        command,
-      })
-      .then((res) => {})
-      .catch((err) => {});
+    alert(command);
+    // app_api
+    //   .post("job", {
+    //     printerToken: printerid,
+    //     ownerId: printer?.ownerId,
+    //     command,
+    //   })
+    //   .then((res) => {})
+    //   .catch((err) => {});
   };
-
-  function CustomAxis({ x, y, payload }) {
-    return (
-      <g transform={`translate(${x},${y})`} className="text-sm text-gray-500 ">
-        <text x={0} y={0} dy={25} textAnchor="middle" fill="currentColor">
-          {payload.value}
-        </text>
-      </g>
-    );
-  }
 
   const uploadFiles = () => {
     let values_form_data = new FormData();
@@ -414,9 +418,65 @@ const Dashboard = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+  const [chartData, setChartData] = useState([]);
 
-  const latestDataPointIndex = data.length - 1;
-  const xDomain = [latestDataPointIndex - 5, latestDataPointIndex]; // Show 5 data points before the latest data point
+  // useEffect(() => {
+  //   app_api
+  //     .get(`${printerid}/heat`)
+  //     .then((response) => {
+  //       const data = response.data;
+  //       console.log(data);
+  //       setChartData(data);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // }, []);
+
+  const [filamentData, setFilamentData] = useState([]);
+  const [heatersData, setHeatersData] = useState([]);
+  const [hoverData, setHoverData] = useState(null);
+  useEffect(() => {
+    // Fetch initial data
+
+    const initialData = printerDetails?.heat?.heaters || [];
+    setHeatersData(initialData);
+
+    const initialLayersData = printerDetails?.job?.layers || [];
+    setFilamentData(initialLayersData);
+
+    // Refresh data every 5 seconds
+    const intervalId = setInterval(() => {
+      const newData = printerDetails?.heat?.heaters || [];
+      setHeatersData(newData);
+    }, 5000);
+
+    const intervalLayer = setInterval(() => {
+      const newlayersData = printerDetails?.job?.layers || [];
+      setFilamentData(newlayersData);
+    }, 5000);
+    // Cleanup interval on component unmount
+    return () => {
+      clearInterval(intervalId);
+      clearInterval(intervalLayer);
+    };
+  }, [printerDetails]);
+
+  const getLineColor = (index) => {
+    // Replace this with your desired logic to assign colors to different lines
+    const colors = ["#FF0000", "#00FF00", "#0000FF"];
+    return colors[index % colors.length];
+  };
+
+  const handleMouseOver = (datapoint) => {
+    setHoverData(datapoint);
+  };
+
+  const handleMouseLeave = () => {
+    setHoverData(null);
+  };
+
+  console.log(filamentData)
   return (
     <div className="flex flex-row">
       <div className="hidden xs:hidden lg:block md:block">
@@ -563,7 +623,6 @@ const Dashboard = () => {
               </button>
             </div>
           </div>
-
           <div className="lg:w-[37%] rounded-lg border shadow-md relative mt-10 lg:mt-0">
             <div className="relative   sm:rounded-lg">
               <h2 className="flex p-3 font-semibold">
@@ -629,6 +688,62 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+          {/* <div className="lg:w-3/12 mt-10 lg:mt-0 border rounded-lg pb-3 shadow-md">
+            <h2 className="flex p-3 font-semibold">
+              <ArrowTrendingUpIcon className="w-5 mr-2" />
+              Temperature chart
+            </h2>
+            <p className="text-gray-400 text-xs text-start pl-4 mb-5 font-light">
+              Track your printer temperature chart.
+            </p>
+            <div className="w-full">
+              <LineChart
+                className="px-5 overflow-x-hidden"
+                width={350}
+                height={250}
+                data={heatersData}
+                margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
+              >
+                {heatersData.map((heater, index) => (
+                  <Line
+                    key={index}
+                    type="monotone"
+                    dataKey="current"
+                    data={heater}
+                    stroke={getLineColor(index)}
+                    strokeWidth={4}
+                    dot={false}
+                  />
+                ))}
+                <XAxis
+                  dataKey="label"
+                  ticks={ticks}
+                  tick={({ x, y, payload }) => (
+                    <g transform={`translate(${x},${y})`}>
+                      <text
+                        x={0}
+                        y={0}
+                        dy={16}
+                        textAnchor="end"
+                        fill="#666"
+                        transform="rotate(-35)"
+                      >
+                        {payload.value}
+                      </text>
+                    </g>
+                  )}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip />
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray="10 5"
+                  stroke="#E5E7EB"
+                />
+              </LineChart>
+            </div>
+          </div> */}
 
           <div className="lg:w-3/12 mt-10 lg:mt-0 border rounded-lg pb-3 shadow-md">
             <h2 className="flex p-3 font-semibold">
@@ -638,42 +753,30 @@ const Dashboard = () => {
             <p className="text-gray-400 text-xs text-start pl-4 mb-5 font-light">
               Track your printer temperature chart.
             </p>
-            <div className="w-full ">
-              <LineChart
-                className="px-5 overflow-x-hidden"
-                width={350}
-                height={250}
-                data={data}
-                margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
-              >
-                <Line
-                  type="monotone"
-                  dataKey="Expected Point"
-                  stroke="#3A63E0"
-                  strokeWidth={4}
-                  dot={false} // Disable dots for the rest of the data points
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Obtain Point"
-                  stroke="green"
-                  strokeWidth={4}
-                  dot={false} // Disable dots for the rest of the data points
-                />
-                <XAxis
-                  dataKey="label"
-                  tick={<CustomAxis />}
-                  axisLine={false}
-                  tickLine={false}
-                  // reversed={true} // Display the latest data point on the right side
-                />
-                <Tooltip />
-                <CartesianGrid
-                  vertical={false}
-                  strokeDasharray="10 5"
-                  stroke="#E5E7EB"
-                />
-              </LineChart>
+            <div className="w-full">
+              <XYPlot width={350} height={250} onMouseLeave={handleMouseLeave} className="relative">
+                <HorizontalGridLines />
+                {heatersData.map((heater, index) => (
+                  <LineMarkSeries
+                    key={index}
+                    data={[{ x: index, y: heater.current, heaterId: index }]}
+                    lineStyle={{ stroke: getLineColor(index) }}
+                    markStyle={{ fill: getLineColor(index) }}
+                    onValueMouseOver={handleMouseOver}
+                  />
+                ))}
+                {hoverData && (
+                  <Hint
+                    value={hoverData}
+                    style={{ background: "rgba(0, 0, 0, 0.7)", color: "#fff" }}
+                  >
+                    <div>{hoverData.x}</div>
+                    <div>{hoverData.y}</div>
+                  </Hint>
+                )}
+                <XAxis />
+                <YAxis />
+              </XYPlot>
             </div>
           </div>
         </div>
@@ -767,7 +870,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="lg:w-[30%] mt-10 lg:mt-0 border overflow-x-auto rounded-lg pb-3 shadow-md">
+          {/* <div className="lg:w-[30%] mt-10 lg:mt-0 border overflow-x-auto rounded-lg pb-3 shadow-md">
             <h2 className="flex p-3 font-semibold">
               <CircleStackIcon className="w-5 mr-2 " />
               Live Streaming
@@ -815,6 +918,40 @@ const Dashboard = () => {
               </button>
             </div>
           </div>
+        </div> */}
+
+        <div className="lg:w-3/12 mt-10 lg:mt-0 border rounded-lg pb-3 shadow-md ">
+      <h2 className="flex p-3 font-semibold">
+        <ArrowTrendingUpIcon className="w-5 mr-2" />
+        Layers chart
+      </h2>
+      <p className="text-gray-400 text-xs text-start pl-4 mb-5 font-light">
+        Track your filament usage chart.
+      </p>
+      <div className="w-full overflow-x-auto">
+        <XYPlot width={900} height={250} onMouseLeave={handleMouseLeave} className="relative">
+          <HorizontalGridLines />
+          {filamentData.map((layer, index) => (
+            <LineMarkSeries
+              key={index}
+              data={layer.filament.map((value, i) => ({ x: i, y: value }))}
+              onValueMouseOver={handleMouseOver}
+            />
+          ))}
+          {hoverData && (
+            <Hint
+              value={hoverData}
+              style={{ background: "rgba(0, 0, 0, 0.7)", color: "#fff" }}
+            >
+              <div>{hoverData.x}</div>
+              <div>{hoverData.y}</div>
+            </Hint>
+          )}
+          <XAxis title="Layer" tickFormat={(value) => ` ${value}`} />
+          <YAxis title="Filament Usage" />
+        </XYPlot>
+      </div>
+    </div>
         </div>
 
         <div className="lg:flex mt-10 justify-between items-start ">
@@ -830,28 +967,26 @@ const Dashboard = () => {
                 </p>
                 <div className="flex border rounded-lg" id="feedamount"></div>
               </div>
-              <div className="lg:w-5/12 mt-5 lg:mt-0 lg:pl-4">
+
+              <div className="lg:w-4/12 ">
                 <p className="font-light text-start text-sm mb-2">
                   Feed rate in mm/s
                 </p>
-                <div
-                  className="flex border rounded-lg mr-2 "
-                  id="feedrate"
-                ></div>
+                <div className="flex border rounded-lg" id="feedrate"></div>
               </div>
               <div className="pl-auto flex mt-5 lg:mt-0">
                 <button
-                  type="button"
                   id="retract"
-                  className="flex mr-3 py-3 px-3 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200      "
+                  type="button"
+                  className="flex mr-3 py-3 px-3 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                 >
                   <ArrowSmallUpIcon className="w-5 mr-2" />
                   Retract
                 </button>
                 <button
-                  type="button"
                   id="extrude"
-                  className="flex  py-3 px-3  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+                  type="button"
+                  className="flex  py-3 px-3  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                 >
                   <ArrowSmallUpIcon className="w-5 mr-2" />
                   Extrude
