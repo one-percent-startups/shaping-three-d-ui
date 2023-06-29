@@ -49,14 +49,8 @@ import Printers from "./printers";
 import "./printerdashboard.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  XYPlot,
-  XAxis,
-  YAxis,
-  HorizontalGridLines,
-  LineMarkSeries,
-  Hint,
-} from "react-vis";
+import ApexCharts from "apexcharts";
+import Chart from "react-apexcharts";
 // import { ArrowTrendingUpIcon } from "@heroicons/react/outline";
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -76,6 +70,8 @@ const Dashboard = () => {
   const [printFile, setPrintFile] = useState("");
 
   const [loadedFiles, setLoadedFiles] = useState([]);
+
+  const [tempStats, setTempStats] = useState([]);
 
   useEffect(() => {
     app_api
@@ -300,14 +296,51 @@ const Dashboard = () => {
   const getPrinterDetails = () => {
     details_api
       .get(`printer-details/${printerid}`)
-
       .then((res) => {
         setPrinterDetails(res.data);
-        console.log(res.data);
+        ApexCharts.exec("apex_layerChart", "updateSeries", [
+          {
+            name: "Layer",
+            data: getLayerData(res.data),
+          },
+        ]);
       })
       .catch((err) => {});
   };
 
+  useEffect(() => {
+    let statsForTemp = Array.from(tempStats);
+    printerDetails.heat?.heaters?.forEach((temp, idx) => {
+      if (
+        Array.isArray(statsForTemp) &&
+        statsForTemp.length > idx &&
+        "data" in statsForTemp[idx] &&
+        Array.isArray(statsForTemp[idx]["data"])
+      ) {
+        while (statsForTemp[idx]["data"].length > 30) {
+          statsForTemp[idx]["data"].shift();
+        }
+        statsForTemp[idx]["data"]?.push({
+          x: Date.now(),
+          y: temp?.current,
+        });
+      } else {
+        statsForTemp[idx] = {
+          name: `Heater ${idx}`,
+          data: [
+            {
+              x: Date.now(),
+              y: temp?.current,
+            },
+          ],
+        };
+      }
+    });
+    ApexCharts.exec("apex_tempChart", "updateSeries", statsForTemp);
+    setTempStats(statsForTemp);
+  }, [printerDetails]);
+
+  // TODO: upload and start in a single job request
   const getJobs = () => {
     details_api
       .get(`jobs/printer/${printerid}`)
@@ -374,8 +407,8 @@ const Dashboard = () => {
     // });
     // values_form_data.append("file", currentTarget.files[0]);
     app_api.post("files", values_form_data).then((res) => {
-      console.log(res.json);
-      console.log("uploaded");
+      // console.log(res.json);
+      // console.log("uploaded");
     });
   };
 
@@ -476,7 +509,14 @@ const Dashboard = () => {
     setHoverData(null);
   };
 
-  console.log(filamentData)
+  const getLayerData = (printerDetails) =>
+    printerDetails?.job?.layers
+      ?.slice(Math.max(printerDetails?.job?.layers.length - 100, 0))
+      .map((l, idx) => ({
+        x: idx + Math.max(printerDetails?.job?.layers.length - 100, 0),
+        y: l?.filament[0],
+      })) || [];
+
   return (
     <div className="flex flex-row">
       <div className="hidden xs:hidden lg:block md:block">
@@ -549,7 +589,9 @@ const Dashboard = () => {
                 onChange={(e) => setPrintFile(e.target.value)}
               >
                 {loadedFiles.map((f) => (
-                  <option value={f}>{f}</option>
+                  <option key={f} value={f}>
+                    {f}
+                  </option>
                 ))}
               </select>
             ) : (
@@ -651,7 +693,7 @@ const Dashboard = () => {
                   <tbody>
                     {printerDetails?.heat?.heaters?.map((h, index) => {
                       return (
-                        <tr className="border-b border-gray-200 ">
+                        <tr key={index} className="border-b border-gray-200 ">
                           <td className="px-6 py-4 text-red-500 text-center">
                             Heater {index + 1}
                           </td>
@@ -688,63 +730,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          {/* <div className="lg:w-3/12 mt-10 lg:mt-0 border rounded-lg pb-3 shadow-md">
-            <h2 className="flex p-3 font-semibold">
-              <ArrowTrendingUpIcon className="w-5 mr-2" />
-              Temperature chart
-            </h2>
-            <p className="text-gray-400 text-xs text-start pl-4 mb-5 font-light">
-              Track your printer temperature chart.
-            </p>
-            <div className="w-full">
-              <LineChart
-                className="px-5 overflow-x-hidden"
-                width={350}
-                height={250}
-                data={heatersData}
-                margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
-              >
-                {heatersData.map((heater, index) => (
-                  <Line
-                    key={index}
-                    type="monotone"
-                    dataKey="current"
-                    data={heater}
-                    stroke={getLineColor(index)}
-                    strokeWidth={4}
-                    dot={false}
-                  />
-                ))}
-                <XAxis
-                  dataKey="label"
-                  ticks={ticks}
-                  tick={({ x, y, payload }) => (
-                    <g transform={`translate(${x},${y})`}>
-                      <text
-                        x={0}
-                        y={0}
-                        dy={16}
-                        textAnchor="end"
-                        fill="#666"
-                        transform="rotate(-35)"
-                      >
-                        {payload.value}
-                      </text>
-                    </g>
-                  )}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip />
-                <CartesianGrid
-                  vertical={false}
-                  strokeDasharray="10 5"
-                  stroke="#E5E7EB"
-                />
-              </LineChart>
-            </div>
-          </div> */}
-
           <div className="lg:w-3/12 mt-10 lg:mt-0 border rounded-lg pb-3 shadow-md">
             <h2 className="flex p-3 font-semibold">
               <ArrowTrendingUpIcon className="w-5 mr-2" />
@@ -754,29 +739,43 @@ const Dashboard = () => {
               Track your printer temperature chart.
             </p>
             <div className="w-full">
-              <XYPlot width={350} height={250} onMouseLeave={handleMouseLeave} className="relative">
-                <HorizontalGridLines />
-                {heatersData.map((heater, index) => (
-                  <LineMarkSeries
-                    key={index}
-                    data={[{ x: index, y: heater.current, heaterId: index }]}
-                    lineStyle={{ stroke: getLineColor(index) }}
-                    markStyle={{ fill: getLineColor(index) }}
-                    onValueMouseOver={handleMouseOver}
-                  />
-                ))}
-                {hoverData && (
-                  <Hint
-                    value={hoverData}
-                    style={{ background: "rgba(0, 0, 0, 0.7)", color: "#fff" }}
-                  >
-                    <div>{hoverData.x}</div>
-                    <div>{hoverData.y}</div>
-                  </Hint>
-                )}
-                <XAxis />
-                <YAxis />
-              </XYPlot>
+              <Chart
+                options={{
+                  chart: {
+                    id: "apex_tempChart",
+                    toolbar: {
+                      show: false,
+                    },
+                    zoom: {
+                      enabled: false,
+                    },
+                  },
+                  dataLabels: {
+                    enabled: false,
+                  },
+                  stroke: {
+                    curve: "smooth",
+                  },
+                  markers: {
+                    size: 0,
+                  },
+                  xaxis: {
+                    type: "datetime",
+                    range: 60000,
+                  },
+                  tooltip: {
+                    x: {
+                      format: "mm:ss",
+                    },
+                  },
+                  legend: {
+                    show: true,
+                  },
+                }}
+                series={tempStats}
+                type="line"
+                height={350}
+              />
             </div>
           </div>
         </div>
@@ -890,25 +889,13 @@ const Dashboard = () => {
                       <XMarkIcon className="w-5" />
                     </button>
                     <div className="bg-white p-4 w-[80vw] h-[80vh]">
-                      <iframe
-                        src={printer?.streamLink}
-                        width="100%"
-                        height="100%"
-                        title="Live Stream"
-                        style={{ objectFit: "cover" }}
-                      ></iframe>
+                      <img src={printer?.streamLink} />
                     </div>
                   </div>
                 </div>
               )}
               <div className="aspect-w-32 aspect-h-16">
-                <iframe
-                  src={printer?.streamLink}
-                  width="100%"
-                  height="100%"
-                  title="Live Stream"
-                  style={{ objectFit: "cover" }}
-                ></iframe>
+                <img src={printer?.streamLink} /
               </div>
               <button
                 className="absolute bottom-4 right-4 cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded"
@@ -917,42 +904,62 @@ const Dashboard = () => {
                 <ArrowsPointingOutIcon className="w-5" />
               </button>
             </div>
+          </div> */}
+          <div className="lg:w-4/12 mt-10 lg:mt-0 border rounded-lg pb-3 shadow-md ">
+            <h2 className="flex p-3 font-semibold">
+              <ArrowTrendingUpIcon className="w-5 mr-2" />
+              Layers chart
+            </h2>
+            <p className="text-gray-400 text-xs text-start pl-4 mb-5 font-light">
+              Track your filament usage chart.
+            </p>
+            <div className="w-full overflow-x-auto">
+              <Chart
+                options={{
+                  id: "apex_layerChart",
+                  chart: {
+                    toolbar: {
+                      show: false,
+                    },
+                    zoom: {
+                      enabled: false,
+                    },
+                  },
+                  dataLabels: {
+                    enabled: false,
+                  },
+                  stroke: {
+                    curve: "smooth",
+                  },
+                  markers: {
+                    size: 0,
+                  },
+                  xaxis: {
+                    type: "numeric",
+                    labels: { formatter: (val, idx) => parseInt(val) },
+                  },
+                  yaxis: {
+                    labels: { formatter: (val, idx) => parseInt(val) },
+                  },
+                  legend: {
+                    show: true,
+                  },
+                }}
+                series={[
+                  {
+                    name: "Layer",
+                    data: getLayerData(printerDetails),
+                  },
+                ]}
+                type="line"
+                height={340}
+                width={340}
+              />
+            </div>
           </div>
-        </div> */}
-
-        <div className="lg:w-3/12 mt-10 lg:mt-0 border rounded-lg pb-3 shadow-md ">
-      <h2 className="flex p-3 font-semibold">
-        <ArrowTrendingUpIcon className="w-5 mr-2" />
-        Layers chart
-      </h2>
-      <p className="text-gray-400 text-xs text-start pl-4 mb-5 font-light">
-        Track your filament usage chart.
-      </p>
-      <div className="w-full overflow-x-auto">
-        <XYPlot width={900} height={250} onMouseLeave={handleMouseLeave} className="relative">
-          <HorizontalGridLines />
-          {filamentData.map((layer, index) => (
-            <LineMarkSeries
-              key={index}
-              data={layer.filament.map((value, i) => ({ x: i, y: value }))}
-              onValueMouseOver={handleMouseOver}
-            />
-          ))}
-          {hoverData && (
-            <Hint
-              value={hoverData}
-              style={{ background: "rgba(0, 0, 0, 0.7)", color: "#fff" }}
-            >
-              <div>{hoverData.x}</div>
-              <div>{hoverData.y}</div>
-            </Hint>
-          )}
-          <XAxis title="Layer" tickFormat={(value) => ` ${value}`} />
-          <YAxis title="Filament Usage" />
-        </XYPlot>
-      </div>
-    </div>
         </div>
+
+        {/* </div> */}
 
         <div className="lg:flex mt-10 justify-between items-start ">
           <div className="border rounded-lg p-3 lg:w-8/12 mt-10 lg:mt-0 shadow-md">
@@ -1003,7 +1010,10 @@ const Dashboard = () => {
 
             <p className="text-start text-sm font-light">Fan Selection</p>
             {printerDetails?.fans?.map((f, idx) => (
-              <div className=" mt-3 ml-auto flex justify-between items-center">
+              <div
+                key={idx}
+                className=" mt-3 ml-auto flex justify-between items-center"
+              >
                 <span>Fan {idx + 1}</span>
                 <span>{f?.actualValue || "No data"}</span>
                 <div className="w-9/12 flex items-center border rounded-xl items-center ">
@@ -1196,7 +1206,7 @@ const Dashboard = () => {
             </div>
             <hr className="mt-3 "></hr>
             {printerDetails?.move?.extruders?.map((e, index) => (
-              <div className="p-3 mt-3">
+              <div key={index} className="p-3 mt-3">
                 <p className="text-start text-sm mb-3">Extruder {index + 1}</p>
                 <div className="flex justify-between items-center ">
                   <input
@@ -1248,7 +1258,7 @@ const Dashboard = () => {
               </div>
               <hr className="mt-3 "></hr>
               {printerDetails?.move?.extruders?.map((e, idx) => (
-                <div className="p-3 mt-2">
+                <div key={idx} className="p-3 mt-2">
                   <p className="text-start text-sm mb-3">Extruder {idx + 1}</p>
                   <div className="flex justify-between items-center ">
                     <input
