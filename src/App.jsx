@@ -7,6 +7,7 @@ import Printers from "./pages/printers.jsx";
 import PrinterDashboard from "./pages/printerdashboard.jsx";
 import Logout from "./components/auth/logout";
 import { PrinterConsole } from "./pages/printerConsole";
+import Globals from "./pages/globals";
 
 // import StudentDashboard from "./pages/student_dashboard";
 // import NavBar from "./components/navigation";
@@ -27,6 +28,7 @@ function App() {
           path="printers/:printerId/console"
           element={<PrinterConsole />}
         ></Route>
+        <Route path="globals" element={<Globals />} />
       </Route>
     </Routes>
   );

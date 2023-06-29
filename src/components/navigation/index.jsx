@@ -65,10 +65,8 @@ const NavBar = () => {
                 <ArrowsRightLeftIcon className="w-5 text-white" />
               </button>
             </div>
-            
             <ul className="space-y-2 mt-5">
               <li>
-                
                 <a
                   href="/printers"
                   className="bg-[#344054] mt-1 flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-[#344054] focus:bg-[#344054]"
@@ -78,50 +76,15 @@ const NavBar = () => {
                     Home
                   </span>
                 </a>
-                {/* <a
-                  className=" mt-3 cursor-pointer flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-[#344054] focus:bg-[#344054]"
-                >
-                  <span className="flex  ml-3 text-md font-medium text-white ">
-                    <AdjustmentsVerticalIcon className="w-7 pr-2" />
-                    Console
-                  </span>
-                </a> */}
-                {/* <a
-                  href="/landing"
-                  className="mt-1 flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-[#344054] focus:bg-[#344054]"
+                <a
+                  href="/globals"
+                  className="bg-[#344054] mt-1 flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-[#344054] focus:bg-[#344054]"
                 >
                   <span className="flex ml-3 text-md font-medium text-white ">
-                    <CodeBracketIcon className="w-7 pr-2" />
-                    Console
+                    <Cog8ToothIcon className="w-7 pr-2" />
+                    Configurations
                   </span>
                 </a>
-                <a
-                  href="/landing"
-                  className="mt-1 flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-[#344054] focus:bg-[#344054]"
-                >
-                  <span className=" flex ml-3 text-md font-medium text-white ">
-                    <PrinterIcon className="w-7 pr-2" />
-                    Job
-                  </span>
-                </a>
-                <a
-                  href="/landing"
-                  className="mt-1 flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-[#344054] focus:bg-[#344054]"
-                >
-                  <span className="flex ml-3 text-md font-medium text-white ">
-                    <FolderIcon className="w-7 pr-2" />
-                    Files
-                  </span>
-                </a>
-                <a
-                  href="/classes"
-                  className="mt-1 flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-[#344054] focus:bg-[#344054]"
-                >
-                  <span className="flex ml-3 text-md font-medium text-white ">
-                    <Cog6ToothIcon className="w-7 pr-2" />
-                    Settings
-                  </span>
-                </a> */}
               </li>
             </ul>
           </div>
