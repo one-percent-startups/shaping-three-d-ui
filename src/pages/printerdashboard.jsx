@@ -56,6 +56,9 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
+const ONE_SECOND = 1000;
+const INTERVAL = ONE_SECOND;
+
 const Dashboard = () => {
   const [postId, setPostId] = useState("");
   const [printer, setPrinter] = useState({});
@@ -91,7 +94,7 @@ const Dashboard = () => {
       setInterval(() => {
         getPrinterDetails();
         getJobs();
-      }, 5000)
+      }, INTERVAL)
     );
     viewPrinter();
     getFileList();
@@ -482,12 +485,12 @@ const Dashboard = () => {
     const intervalId = setInterval(() => {
       const newData = printerDetails?.heat?.heaters || [];
       setHeatersData(newData);
-    }, 5000);
+    }, INTERVAL);
 
     const intervalLayer = setInterval(() => {
       const newlayersData = printerDetails?.job?.layers || [];
       setFilamentData(newlayersData);
-    }, 5000);
+    }, INTERVAL);
     // Cleanup interval on component unmount
     return () => {
       clearInterval(intervalId);
@@ -620,32 +623,64 @@ const Dashboard = () => {
               <p className="flex ">
                 <InformationCircleIcon className="w-5" /> Status
               </p>
-              <p className="">
-                Mode :<span className="font-light">fff</span>
+              <p
+                className={`capitalize rounded px-2 py-1 text-xs font-semibold shadow-sm ${
+                  ["disconnected", "off", "cancelling"].includes(
+                    printerDetails?.state?.status
+                  )
+                    ? "bg-red-50 text-red-600 hover:bg-red-100"
+                    : ["updating", "halted", "pausing", "busy"].includes(
+                        printerDetails?.state?.status
+                      )
+                    ? "bg-amber-50 text-amber-600 hover:bg-amber-100"
+                    : ["paused", "resuming"].includes(
+                        printerDetails?.state?.status
+                      )
+                    ? "bg-yellow-200 text-yellow-600 hover:bg-yellow-100"
+                    : ["starting", "processing"].includes(
+                        printerDetails?.state?.status
+                      )
+                    ? "bg-green-50 text-green-600 hover:bg-green-100"
+                    : ["simulating", "idle", "changingTool"].includes(
+                        printerDetails?.state?.status
+                      )
+                    ? "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                    : "bg-indigo-50 text-indigo-600 hover:bg-indigo-100"
+                }`}
+              >
+                {printerDetails?.state?.status}
               </p>
             </div>
             <hr className="mt-3 "></hr>
             <div className="flex justify-between mt-3 p-3">
               <p className="flex text-gray-600 text-sm">Total Position</p>
-              <p className="text-sm text-gray-600">X.00</p>
-              <p className="text-sm text-gray-600">Y.00</p>
-              <p className="text-sm text-gray-600">Z.00</p>
+              {printerDetails?.move?.axes?.map((axis, idx) => (
+                <p key={idx} className="text-sm text-gray-600">
+                  {axis?.letter || "N/A"}: {axis?.machinePosition || "N/A"}
+                </p>
+              ))}
             </div>
             <hr className="mt-3"></hr>
             <div className="flex justify-between mt-3 px-3">
               <p className="flex text-gray-600 text-sm">Extruder Drives</p>
-              <p className="text-sm text-gray-600">
-                Drive 0<br></br>0.0
-              </p>
-              <p className="text-sm text-gray-600">
-                Drive 1<br></br>0.0
-              </p>
+              {printerDetails?.move?.extruders?.map((ex, idx) => (
+                <p key={idx} className="text-sm text-gray-600">
+                  Drive {idx}
+                  <br></br>
+                  {ex?.position || "N/A"}
+                </p>
+              ))}
             </div>
             <hr className="mt-3"></hr>
             <div className="flex justify-between mt-3 px-3 mb-3">
               <p className="flex text-gray-600 text-sm">Speeds</p>
               <p className="text-sm text-gray-600 text-end">
-                Requested speed 0.0 mm/s <br></br>Top Speed 0.0 mm/s
+                Requested speed:{" "}
+                {printerDetails?.move?.currentMove?.requestedSpeed || "N/A"}mm/s
+                <br></br>
+                Top Speed:{" "}
+                {printerDetails?.move?.currentMove?.topSpeed || "N/A"}
+                mm/s
               </p>
             </div>
             <div className="flex justify-end p-3 bg-gray-200 absolute bottom-0 w-[100%]">
@@ -702,7 +737,9 @@ const Dashboard = () => {
                           </td>
                           <td className="px-6 py-4 text-center">
                             <input
-                              type="text"
+                              type="number"
+                              min="0"
+                              placeholder={h?.active}
                               id={`temperature_active_${index}_input`}
                               className=" border w-[60px] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2 text-center inline-flex items-center"
                             />
@@ -713,7 +750,9 @@ const Dashboard = () => {
                           </td>
                           <td className="px-6 py-4 text-center">
                             <input
-                              type="text"
+                              type="number"
+                              min="0"
+                              placeholder={h?.standby}
                               id={`temperature_standby_${index}_input`}
                               className="border w-[60px] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center"
                             />
@@ -1046,16 +1085,7 @@ const Dashboard = () => {
             </h1>
             <hr className="my-3"></hr>
 
-            {/* {printerDetails?.state?.status === "idle" && (
-              <button
-                id="start_print"
-                type="button"
-                className="my-2 mx-auto w-full flex justify-center font-md items-center flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-              >
-                Print
-              </button>
-            )} */}
-            {printerDetails?.state?.status === "processing" && (
+            {printerDetails?.state?.status === "processing" ? (
               <button
                 id="pause_print"
                 type="button"
@@ -1063,9 +1093,8 @@ const Dashboard = () => {
               >
                 Pause
               </button>
-            )}
-            {(printerDetails?.state?.status === "paused" ||
-              printerDetails?.state?.status === "pausing") && (
+            ) : printerDetails?.state?.status === "paused" ||
+              printerDetails?.state?.status === "pausing" ? (
               <button
                 id="resume_print"
                 type="button"
@@ -1073,8 +1102,7 @@ const Dashboard = () => {
               >
                 Resume
               </button>
-            )}
-            {printerDetails?.state?.status === "processing" && (
+            ) : printerDetails?.state?.status === "processing" ? (
               <button
                 id="stop_print"
                 type="button"
@@ -1082,6 +1110,10 @@ const Dashboard = () => {
               >
                 Stop
               </button>
+            ) : (
+              <span className="text-slate-400 text-xs">
+                The printer is idle.
+              </span>
             )}
           </div>
 
@@ -1090,7 +1122,10 @@ const Dashboard = () => {
               <RocketLaunchIcon className="w-5" />Z Babystepping
             </h1>
             <p className="text-xs text-gray-400 text-start mt-1">
-              Current offset 0.00mm
+              Current offset{" "}
+              {printerDetails?.move?.axes?.find((axis) => axis?.letter === "Z")
+                ?.babystep || "N/A"}
+              mm
             </p>
             <div className="flex flex-col justify-between items-center">
               <div className="w-full flex justify-between items-center mt-3 ">
