@@ -523,7 +523,7 @@ const Dashboard = () => {
         <NavBar />
       </div>
 
-      <div className="p-4 pt-6 xs:ml-[0em]  w-full ">
+      <div className="py-4 px-12 pt-6 xs:ml-[0em]  w-full">
         <div className="md:flex justify-center items-center">
           <div className="md:w-6/12 text-start flex">
             <Formik
@@ -577,7 +577,7 @@ const Dashboard = () => {
             <button
               type="button"
               onClick={() => setUploadFiles(true)}
-              className="flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+              className="flex mr-1 py-2 px-5  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
             >
               <CloudArrowUpIcon className="w-5 mr-2" />
               Upload
@@ -595,7 +595,7 @@ const Dashboard = () => {
                 ))}
               </select>
             ) : (
-              <span className="text-muted mr-2">No loaded file</span>
+              <span className="text-muted mr-4">No loaded file</span>
             )}
             <button
               id="start_print"
@@ -615,7 +615,7 @@ const Dashboard = () => {
         </div>
 
         <div className="lg:flex justify-between mt-10 ">
-          <div className="rounded-lg border lg:w-4/12 shadow-md">
+          <div className="rounded-lg border lg:w-4/12 shadow-md relative">
             <div className="flex justify-between px-3 pb-0 pt-3 font-semibold">
               <p className="flex ">
                 <InformationCircleIcon className="w-5" /> Status
@@ -648,7 +648,7 @@ const Dashboard = () => {
                 Requested speed 0.0 mm/s <br></br>Top Speed 0.0 mm/s
               </p>
             </div>
-            <div className="flex justify-end p-3 bg-gray-200">
+            <div className="flex justify-end p-3 bg-gray-200 absolute bottom-0 w-[100%]">
               <button
                 type="button"
                 id="get_firmware_details"
@@ -679,13 +679,13 @@ const Dashboard = () => {
                         <li className="text-red-500 ">Heater</li>
                       </th>
                       <th scope="col" className="px-6 py-3 bg-gray-50 ">
-                        <li className="text-green-500 ">Current</li>
+                        <li className="text-green-500 text-center ">Current</li>
                       </th>
                       <th scope="col" className="px-6 py-3">
-                        <li className="text-blue-500">Active</li>
+                        <li className="text-blue-500 text-center">Active</li>
                       </th>
                       <th scope="col" className="px-6 py-3">
-                        <li className="text-yellow-700 ">Standby</li>
+                        <li className="text-yellow-700 text-center">Standby</li>
                       </th>
                     </tr>
                   </thead>
@@ -708,7 +708,7 @@ const Dashboard = () => {
                             />
                             <button
                               type="button"
-                              className="temperature_active"
+                              className="bg-[#FFA200] hover:bg-[#f2ae38] leading-4 text-white rounded-lg mt-3 py-2 temperature_active"
                             ></button>
                           </td>
                           <td className="px-6 py-4 text-center">
@@ -719,7 +719,7 @@ const Dashboard = () => {
                             />
                             <button
                               type="button"
-                              className="temperature_standby"
+                              className="bg-[#FFA200] hover:bg-[#f2ae38] leading-4 text-white rounded-lg mt-3 py-2 temperature_standby"
                             ></button>
                           </td>
                         </tr>
@@ -905,7 +905,7 @@ const Dashboard = () => {
               </button>
             </div>
           </div> */}
-          <div className="lg:w-4/12 mt-10 lg:mt-0 border rounded-lg pb-3 shadow-md ">
+          <div className="lg:w-[29%] mt-10 lg:mt-0 border rounded-lg pb-3 shadow-md ">
             <h2 className="flex p-3 font-semibold">
               <ArrowTrendingUpIcon className="w-5 mr-2" />
               Layers chart
@@ -953,7 +953,7 @@ const Dashboard = () => {
                 ]}
                 type="line"
                 height={340}
-                width={340}
+                width={480}
               />
             </div>
           </div>
@@ -1018,7 +1018,7 @@ const Dashboard = () => {
                 <span>{f?.actualValue || "No data"}</span>
                 <div className="w-9/12 flex items-center border rounded-xl items-center ">
                   <input
-                    className="w-10/12 mx-3 accent-[#ffa200]  bg-[#fff]"
+                    className="w-10/12 mx-3 accent-[#ffa200]  bg-[#E4E7EC]"
                     // className=""
                     type="range"
                     // placeholder=" Input speed"
@@ -1092,29 +1092,31 @@ const Dashboard = () => {
             <p className="text-xs text-gray-400 text-start mt-1">
               Current offset 0.00mm
             </p>
-            <div className="flex  justify-between items-center">
-              <div className=" mt-3">
+            <div className="flex flex-col justify-between items-center">
+              <div className="w-full flex justify-between items-center mt-3 ">
                 <input
-                  className="w-20 outline outline-1 mb-3 px-2"
+                  className="w-20  border border-gray-200 px-2  "
                   type="text"
                   defaultValue="0.05"
                   id="minus_z_babystepping_input"
                 />
-                <button
+               
+               <button
                   type="button"
                   id="minus_z_babystepping"
-                  className="mx-auto w-32 flex justify-center font-md items-center  flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+                  className="mx-auto  w-32 flex justify-center font-md items-center  flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
                 >
                   <ArrowTrendingDownIcon className="w-5 " />
                 </button>
               </div>
-              <div className=" mt-3">
-                <input
-                  className="w-20 outline outline-1 mb-3 px-2"
+              <div className="w-full flex justify-between mt-3 items-center">
+              <input
+                  className="w-20 border border-gray-200  px-2"
                   type="text"
                   id="plus_z_babystepping_input"
                   defaultValue="0.05"
                 />
+               
                 <button
                   type="button"
                   id="plus_z_babystepping"
