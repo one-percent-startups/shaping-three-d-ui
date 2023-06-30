@@ -390,14 +390,14 @@ const Dashboard = () => {
   const onSendCommand = (command) => {
     // console.log({ command });
     alert(command);
-    // app_api
-    //   .post("job", {
-    //     printerToken: printerid,
-    //     ownerId: printer?.ownerId,
-    //     command,
-    //   })
-    //   .then((res) => {})
-    //   .catch((err) => {});
+    app_api
+      .post("job", {
+        printerToken: printerid,
+        ownerId: printer?.ownerId,
+        command,
+      })
+      .then((res) => {})
+      .catch((err) => {});
   };
 
   const uploadFiles = () => {
@@ -1100,8 +1100,8 @@ const Dashboard = () => {
                   defaultValue="0.05"
                   id="minus_z_babystepping_input"
                 />
-               
-               <button
+
+                <button
                   type="button"
                   id="minus_z_babystepping"
                   className="mx-auto  w-32 flex justify-center font-md items-center  flex mr-3 py-2 px-5 mr-2  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
@@ -1110,13 +1110,13 @@ const Dashboard = () => {
                 </button>
               </div>
               <div className="w-full flex justify-between mt-3 items-center">
-              <input
+                <input
                   className="w-20 border border-gray-200  px-2"
                   type="text"
                   id="plus_z_babystepping_input"
                   defaultValue="0.05"
                 />
-               
+
                 <button
                   type="button"
                   id="plus_z_babystepping"
