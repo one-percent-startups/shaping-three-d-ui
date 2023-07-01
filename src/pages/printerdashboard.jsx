@@ -52,6 +52,8 @@ import "react-toastify/dist/ReactToastify.css";
 import ApexCharts from "apexcharts";
 import Chart from "react-apexcharts";
 // import { ArrowTrendingUpIcon } from "@heroicons/react/outline";
+import { socket } from "../socket";
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -75,6 +77,13 @@ const Dashboard = () => {
   const [loadedFiles, setLoadedFiles] = useState([]);
 
   const [tempStats, setTempStats] = useState([]);
+
+  const [streamData, setStreamData] = useState("some");
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filamentData, setFilamentData] = useState([]);
+  const [heatersData, setHeatersData] = useState([]);
+  const [hoverData, setHoverData] = useState(null);
 
   useEffect(() => {
     app_api
@@ -106,9 +115,15 @@ const Dashboard = () => {
         setFiles(res);
       })
       .catch((err) => {});
+    socket.connect("/");
+    socket.on(`stream:${printerid}`, (data) => {
+      console.log({ data });
+      setStreamData(data);
+    });
     return () => {
       clearInterval(detailInterval);
       quitViewPrinter();
+      socket.disconnect();
     };
   }, []);
 
@@ -445,8 +460,6 @@ const Dashboard = () => {
     { label: " 4", "Expected Point": 45, "Obtain Point": 20 },
   ];
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -454,7 +467,6 @@ const Dashboard = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  const [chartData, setChartData] = useState([]);
 
   // useEffect(() => {
   //   app_api
@@ -469,9 +481,6 @@ const Dashboard = () => {
   //     });
   // }, []);
 
-  const [filamentData, setFilamentData] = useState([]);
-  const [heatersData, setHeatersData] = useState([]);
-  const [hoverData, setHoverData] = useState(null);
   useEffect(() => {
     // Fetch initial data
 
@@ -908,7 +917,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* <div className="lg:w-[30%] mt-10 lg:mt-0 border overflow-x-auto rounded-lg pb-3 shadow-md">
+          <div className="lg:w-[30%] mt-10 lg:mt-0 border overflow-x-auto rounded-lg pb-3 shadow-md">
             <h2 className="flex p-3 font-semibold">
               <CircleStackIcon className="w-5 mr-2 " />
               Live Streaming
@@ -928,13 +937,13 @@ const Dashboard = () => {
                       <XMarkIcon className="w-5" />
                     </button>
                     <div className="bg-white p-4 w-[80vw] h-[80vh]">
-                      <img src={printer?.streamLink} />
+                      <img src={`data:image/jpeg;base64, ${streamData}`} />
                     </div>
                   </div>
                 </div>
               )}
               <div className="aspect-w-32 aspect-h-16">
-                <img src={printer?.streamLink} /
+                <img src={`data:image/jpeg;base64, ${streamData}`} />
               </div>
               <button
                 className="absolute bottom-4 right-4 cursor-pointer hover:bg-blue-600 text-white px-4 py-2 rounded"
@@ -943,7 +952,7 @@ const Dashboard = () => {
                 <ArrowsPointingOutIcon className="w-5" />
               </button>
             </div>
-          </div> */}
+          </div>
           <div className="lg:w-[29%] mt-10 lg:mt-0 border rounded-lg pb-3 shadow-md ">
             <h2 className="flex p-3 font-semibold">
               <ArrowTrendingUpIcon className="w-5 mr-2" />
