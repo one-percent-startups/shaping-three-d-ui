@@ -625,7 +625,7 @@ const Dashboard = () => {
         </div>
 
         <div className="lg:flex justify-between mt-10 ">
-          <div className="rounded-lg border lg:w-4/12 shadow-md relative">
+          <div className="rounded-lg border lg:w-4/12 shadow-md relative min-h-[625px]">
             <div className="flex justify-between px-3 pb-0 pt-3 font-semibold">
               <p className="flex ">
                 <InformationCircleIcon className="w-5" /> Status
@@ -699,7 +699,49 @@ const Dashboard = () => {
                 Total energy consumption
               </p>
               <p className="text-sm text-gray-600 text-end">
-                {printerDetails?.electricity?.energy_Wh || "N/A"}Wh
+                {printerDetails?.electricity?.energy_Wh.toString() || "N/A"}Wh
+              </p>
+            </div>
+            <hr className="mt-3"></hr>
+            <div className="flex justify-between mt-3 px-3 mb-3">
+              <p className="flex text-gray-600 text-sm">Voltage</p>
+              <p className="text-sm text-gray-600 text-end">
+                {printerDetails?.electricity?.voltage.toString() || "N/A"}V
+              </p>
+            </div>
+            <hr className="mt-3"></hr>
+            <div className="flex justify-between mt-3 px-3 mb-3">
+              <p className="flex text-gray-600 text-sm">Current</p>
+              <p className="text-sm text-gray-600 text-end">
+                {printerDetails?.electricity?.current_A.toString() || "N/A"}A
+              </p>
+            </div>
+            <hr className="mt-3"></hr>
+            <div className="flex justify-between mt-3 px-3 mb-3">
+              <p className="flex text-gray-600 text-sm">Power</p>
+              <p className="text-sm text-gray-600 text-end">
+                {printerDetails?.electricity?.power_W.toString() || "N/A"}W
+              </p>
+            </div>
+            <hr className="mt-3"></hr>
+            <div className="flex justify-between mt-3 px-3 mb-3">
+              <p className="flex text-gray-600 text-sm">Frequency</p>
+              <p className="text-sm text-gray-600 text-end">
+                {printerDetails?.electricity?.frequency_Hz.toString() || "N/A"}Hz
+              </p>
+            </div>
+            <hr className="mt-3"></hr>
+            <div className="flex justify-between mt-3 px-3 mb-3">
+              <p className="flex text-gray-600 text-sm">Power factor</p>
+              <p className="text-sm text-gray-600 text-end">
+                {printerDetails?.electricity?.power_factor.toString() || "N/A"}
+              </p>
+            </div>
+            <hr className="mt-3"></hr>
+            <div className="flex justify-between mt-3 px-3 mb-3">
+              <p className="flex text-gray-600 text-sm">Alarm</p>
+              <p className="text-sm text-gray-600 text-end">
+                {printerDetails?.electricity?.alarm.toString() || "N/A"}
               </p>
             </div>
             <div className="flex justify-end p-3 bg-gray-200 absolute bottom-0 w-[100%]">
