@@ -406,7 +406,6 @@ const Dashboard = () => {
 
   const onSendCommand = (command) => {
     // console.log({ command });
-    alert(command);
     app_api
       .post("job", {
         printerToken: printerid,
@@ -585,14 +584,14 @@ const Dashboard = () => {
             </Formik>
           </div>
           <div className="w-6/12 text-end flex md:justify-end md:items-center mt-5 md:mt-0 lg:mt-0">
-            <button
+            {/* <button
               type="button"
               onClick={() => setUploadFiles(true)}
               className="flex mr-1 py-2 px-5  text-sm  text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
             >
               <CloudArrowUpIcon className="w-5 mr-2" />
               Upload
-            </button>
+            </button> */}
             {loadedFiles.length > 0 ? (
               <select
                 id="start_print_input"
@@ -615,13 +614,13 @@ const Dashboard = () => {
             >
               Start
             </button>
-            <button
+            {/* <button
               type="button"
               id="emergency_stop"
               className="text-white bg-[#FFA200] hover:bg-blue-800 focus:ring-4 focus:ring-blue-300  rounded-lg text-sm px-5 py-2 mr-2  focus:outline-none "
             >
               Emergency stop
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -684,11 +683,23 @@ const Dashboard = () => {
               <p className="flex text-gray-600 text-sm">Speeds</p>
               <p className="text-sm text-gray-600 text-end">
                 Requested speed:{" "}
-                {printerDetails?.move?.currentMove?.requestedSpeed || "N/A"}mm/s
+                {printerDetails?.move?.currentMove?.requestedSpeed.toString() ||
+                  "N/A"}
+                mm/s
                 <br></br>
                 Top Speed:{" "}
-                {printerDetails?.move?.currentMove?.topSpeed || "N/A"}
+                {printerDetails?.move?.currentMove?.topSpeed.toString() ||
+                  "N/A"}
                 mm/s
+              </p>
+            </div>
+            <hr className="mt-3"></hr>
+            <div className="flex justify-between mt-3 px-3 mb-3">
+              <p className="flex text-gray-600 text-sm">
+                Total energy consumption
+              </p>
+              <p className="text-sm text-gray-600 text-end">
+                {printerDetails?.electricity?.energy_Wh || "N/A"}Wh
               </p>
             </div>
             <div className="flex justify-end p-3 bg-gray-200 absolute bottom-0 w-[100%]">
@@ -719,16 +730,16 @@ const Dashboard = () => {
                   <thead className="text-xs text-gray-700 uppercase ">
                     <tr>
                       <th scope="col" className="px-6 py-3">
-                        <li className="text-red-500 ">Heater</li>
+                        Heater
                       </th>
                       <th scope="col" className="px-6 py-3 bg-gray-50 ">
-                        <li className="text-green-500 text-center ">Current</li>
+                        Current
                       </th>
                       <th scope="col" className="px-6 py-3">
-                        <li className="text-blue-500 text-center">Active</li>
+                        Active
                       </th>
                       <th scope="col" className="px-6 py-3">
-                        <li className="text-yellow-700 text-center">Standby</li>
+                        Standby
                       </th>
                     </tr>
                   </thead>
@@ -738,7 +749,7 @@ const Dashboard = () => {
                       return (
                         <tr key={index} className="border-b border-gray-200 ">
                           <td className="px-6 py-4 text-red-500 text-center">
-                            Heater {index + 1}
+                            Heater {index}
                           </td>
                           <td className="px-6 py-4 bg-gray-50 text-center">
                             {h?.current}
@@ -808,7 +819,7 @@ const Dashboard = () => {
                   },
                   xaxis: {
                     type: "datetime",
-                    range: 60000,
+                    range: 30000,
                   },
                   tooltip: {
                     x: {
@@ -975,6 +986,7 @@ const Dashboard = () => {
                   dataLabels: {
                     enabled: false,
                   },
+                  tooltip: { enabled: false },
                   stroke: {
                     curve: "smooth",
                   },
@@ -984,9 +996,11 @@ const Dashboard = () => {
                   xaxis: {
                     type: "numeric",
                     labels: { formatter: (val, idx) => parseInt(val) },
+                    title: "Layer",
                   },
                   yaxis: {
                     labels: { formatter: (val, idx) => parseInt(val) },
+                    title: "Filament used",
                   },
                   legend: {
                     show: true,
@@ -1014,20 +1028,22 @@ const Dashboard = () => {
               Extrusion Control
             </h1>
             <hr className="my-3"></hr>
-            <div className="lg:flex w-12/12 justify-between items-end">
-              <div className="lg:w-5/12 ">
+            <div className="lg:flex justify-between items-end">
+              <div className="">
                 <p className="font-light text-start text-sm mb-2">
                   Feed amount in mm
                 </p>
                 <div className="flex border rounded-lg" id="feedamount"></div>
               </div>
 
-              <div className="lg:w-4/12 ">
+              <div className="">
                 <p className="font-light text-start text-sm mb-2">
                   Feed rate in mm/s
                 </p>
                 <div className="flex border rounded-lg" id="feedrate"></div>
               </div>
+            </div>
+            <div className="lg:w-full ">
               <div className="pl-auto flex mt-5 lg:mt-0">
                 <button
                   id="retract"
@@ -1077,7 +1093,7 @@ const Dashboard = () => {
                     type="button"
                     className="fan_speed flex py-2 px-3 text-sm text-gray-900 focus:outline-none bg-white border-l rounded-br-2xl rounded-tr-2xl border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200"
                   >
-                    +
+                    save
                   </button>
                 </div>
               </div>
@@ -1252,7 +1268,10 @@ const Dashboard = () => {
             <hr className="mt-3 "></hr>
             {printerDetails?.move?.extruders?.map((e, index) => (
               <div key={index} className="p-3 mt-3">
-                <p className="text-start text-sm mb-3">Extruder {index + 1}</p>
+                <p className="text-start text-sm mb-2">Extruder {index + 1}</p>
+                <p className="text-start text-xs mb-3">
+                  Current value: {e?.factor || "N/A"}
+                </p>
                 <div className="flex justify-between items-center ">
                   <input
                     className="accent-[#ffa200] w-8/12 bg-[#fff]"
@@ -1298,30 +1317,31 @@ const Dashboard = () => {
             <div className="rounded-lg border mt-10 lg:mt-3  w-12/12  shadow-md">
               <div className="flex justify-between px-3 pb-0 pt-3 font-semibold">
                 <p className="flex ">
-                  <ClockIcon className="w-5" /> Speed factors
+                  <ClockIcon className="w-5" /> Speed factor
                 </p>
               </div>
               <hr className="mt-3 "></hr>
-              {printerDetails?.move?.extruders?.map((e, idx) => (
-                <div key={idx} className="p-3 mt-2">
-                  <p className="text-start text-sm mb-3">Extruder {idx + 1}</p>
-                  <div className="flex justify-between items-center ">
-                    <input
-                      className="accent-[#ffa200] w-8/12 bg-[#fff]"
-                      type="range"
-                      min="0.1"
-                      max="100"
-                      id={`speed_factor_${idx}_input`}
-                    />
-                    <button
-                      type="button"
-                      className="speed_factor flex py-2 px-3 text-sm text-gray-900 focus:outline-none bg-white border rounded-lg border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
-                    >
-                      +
-                    </button>
-                  </div>
+              <div className="p-3 mt-2">
+                <p className="text-start text-sm mb-3">
+                  Current value: {printerDetails?.move?.speedFactor || "N/A"}
+                </p>
+                <div className="flex justify-between items-center ">
+                  <input
+                    className="accent-[#ffa200] w-8/12 bg-[#fff]"
+                    type="range"
+                    min="0.1"
+                    max="100"
+                    id="speed_factor_input"
+                  />
+                  <button
+                    type="button"
+                    id="speed_factor"
+                    className="flex py-2 px-3 text-sm text-gray-900 focus:outline-none bg-white border rounded-lg border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 "
+                  >
+                    save
+                  </button>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>
