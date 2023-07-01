@@ -801,6 +801,19 @@ const Dashboard = () => {
                 options={{
                   chart: {
                     id: "apex_tempChart",
+                    animations: {
+                      enabled: true,
+                      easing: "linear",
+                      speed: 800,
+                      animateGradually: {
+                        enabled: true,
+                        delay: 150,
+                      },
+                      dynamicAnimation: {
+                        enabled: true,
+                        speed: 350,
+                      },
+                    },
                     toolbar: {
                       show: false,
                     },
@@ -974,8 +987,8 @@ const Dashboard = () => {
             <div className="w-full overflow-x-auto">
               <Chart
                 options={{
-                  id: "apex_layerChart",
                   chart: {
+                    id: "apex_layerChart",
                     toolbar: {
                       show: false,
                     },
@@ -1014,7 +1027,7 @@ const Dashboard = () => {
                 ]}
                 type="line"
                 height={340}
-                width={480}
+                // width={480}
               />
             </div>
           </div>
