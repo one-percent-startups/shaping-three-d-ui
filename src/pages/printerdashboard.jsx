@@ -117,7 +117,6 @@ const Dashboard = () => {
       .catch((err) => {});
     socket.connect("/");
     socket.on(`stream:${printerid}`, (data) => {
-      console.log({ data });
       setStreamData(data);
     });
     return () => {
